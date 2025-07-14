@@ -54,7 +54,7 @@ Builds on the idea the human brain is hard wired to perceive movement as danger.
 
 ### Opt out
 - **Opt out of speedblink marker** by adding no-speedblink.txt in the host app bin folder, checked by InitialiseErrorHandling
-- Alternatively grep out #speedblink afterwards, combining visual markers with improved likelyhood of pipeline compliance.
+- Alternatively grep out #speedblink afterwards, combining visual markers for improved likelyhood of pipeline compliance.
 
 ## Timezone
 Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
