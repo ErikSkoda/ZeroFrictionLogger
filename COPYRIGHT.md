@@ -1,1 +1,1 @@
-Copyright (c) 2025 Erik Skoda. All rights reserved.
+Copyright (c) 2025 Erik Skoda
