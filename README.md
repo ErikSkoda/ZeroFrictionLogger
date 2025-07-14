@@ -46,11 +46,11 @@ Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [
 
 While a pilot might be grateful for an ejection seat to leave a burning plane, the gratitude probably lasts longer if a parachute is included.
 
-## Speedblink testing (and how to opt out)
+## Speedblink testing
 The exception handling methods include a visual marker, grepable sentinel tag designed to stand out of monotonous log lines.
 
 ### idea
-Builds on the idea the human brain is hard wired to perceive movement as danger. When scanning the log at speed the marker is more likely to catch attention in the monotony of log lines.
+Builds on the idea the human brain is hard wired to perceive movement as danger. A literal life hack to survive in a dangerous environment - the Savannah. When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant. When scanning the log at speed the marker appears as movement and is more likely to catch attention in the monotony of log lines.
 
 ### Opt out
 - **Opt out of speedblink marker** by adding no-speedblink.txt in the host app bin folder, checked by InitialiseErrorHandling
