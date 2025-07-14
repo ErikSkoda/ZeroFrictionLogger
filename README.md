@@ -39,7 +39,7 @@ As you move from Dev to Ops you may still want to **opt out of log levels DEBUG,
 
 You can still start with zero config. Can go LIVE without config. You can opt-out of log levels with minimal complexity and same code base.
 
-The log prepared by InitialiseErrorHandling will tell you (and double check) whether levels DEBUG, INFO, WARN are active - and brie447fly inform on how to opt-out.
+The log prepared by InitialiseErrorHandling will tell you (and double check) whether levels DEBUG, INFO, WARN are active - and briefly inform on how to opt-out.
 
 ### No ejection seat without parachute
 Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [AUDIT]. That would be like providing a pilot with an ejection seat without parachute.
