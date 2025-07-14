@@ -44,7 +44,7 @@ The log prepared by InitialiseErrorHandling will tell you (and double check) whe
 ### No ejection seat without parachute
 Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [AUDIT]. That would be like providing a pilot with an ejection seat without parachute.
 
-While a pilot might be grateful for an ejection seat to leave a burning plane, the gratitude probably last longer if a parachute is included.
+While a pilot might be grateful for an ejection seat to leave a burning plane, the gratitude probably lasts longer if a parachute is included.
 
 ## Speedblink testing (and how to opt out)
 The exception handling methods include a visual marker, grepable sentinel tag designed to stand out of monotonous log lines.
