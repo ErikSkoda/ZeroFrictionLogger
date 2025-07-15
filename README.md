@@ -96,7 +96,7 @@ catch (Exception ex)
     Err.HandleExceptionWithoutStackTrace(MethodBase.GetCurrentMethod().Name, ex.Message);
 }
 
-### opt out of default behaviour, complete list
+### Opt out of default behaviour, complete list
 You may want to customize logger behaviour. Here is how to do it.
 
 | Opt out of      | Marker file       | Notes                                                            |
@@ -108,7 +108,8 @@ You may want to customize logger behaviour. Here is how to do it.
 | log level AUDIT | **not possible**  | always logged                                                    |
 | speedblink text | no-speedblink.txt | Checked once by InitialiseErrorHandling                          |
 | Using UTC time  | no-utc.txt        | Checked once by InitialiseErrorHandling, uses local time instead |
-| InitialiseErrorHandling checks the presence in the host app bin folder.                                |
+
+*InitialiseErrorHandling checks the presence in the host app bin folder.*
 
 ## UTF-8
 UTF-8 Encoding without BOM should take care of compatibility with many other tools downstream.
