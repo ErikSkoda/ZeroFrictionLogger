@@ -173,226 +173,267 @@ There are **many** great and feature rich loggers out there, some including adva
 2025-07-14 15:10:14 [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
 ```
 
-## Documentation
-Following documentation will be provided
-- Full documentation (below)
-- Xunit test project - providing living low level living documentation as a by catch of testing (to be uploaded)
-- Intellisense XML for use in IDE (to be created)
-- Uploading some screenshots to GitHub should be no problem.
+## Full documentation  
+Public method documentation of `log.cs`.
 
-## Full documentation
-Public method documentation of log.cs.
+### Zilch  
+Visual markers, grepable sentinel tags to catch an  
+uninitialized state and to prevent silent errors.
 
-### Zilch
-/// <summary>
-/// Visual markers, grepable sentinel tags to catch an
-/// uninitialized state and to prevent silent errors.
-/// </summary>
-/// <returns>#zilch #iota #diddly-squat</returns>
+**Returns:** `#zilch #iota #diddly-squat`
 
-### IsZilch
-/// <summary>
-/// Checks whether a value equals Zilch()
-/// </summary>
-/// <param name="value"></param>
-/// <returns>boolean</returns>
+---
 
-### NotZilch
-/// <summary>
-/// Checks whether a value is different from Zilch()
-/// </summary>
-/// <param name="value"></param>
-/// <returns>boolean</returns>
+### IsZilch  
+Checks whether a value equals `Zilch()`.
 
-### NullExpression
-/// <summary>
-/// Visual markers, grepable sentinel tag to catch an
-/// uninitialized state and to prevent silent errors.
-/// </summary>
-/// <returns>#null-value</returns>
+**Parameters:**  
+- `value`
 
-### ReplaceNull
-/// <summary>
-/// Returns the passed value unless it's null, in which case it returns
-/// sentinel tag "#null-value".
-/// </summary>
-/// <param name="value"></param>
-/// <returns>#null-value</returns>
-		
-### ReplaceNullOrEmpty
-/// <summary>
-/// Returns the passed value unless it's null or empty
-/// in which case it returns #zilch #iota #diddly-squat.
-/// </summary>
-/// <param name="value"></param>
-/// <returns>#zilch #iota #diddly-squat</returns>
-		
-### RedactedExpression
-/// <summary>
-/// Visual marker, grepable sentinel value for replacing data to be redacted.
-/// </summary>
-/// <returns>#redacted #audit</returns>
-		
-### IsRedacted
-/// <summary>
-/// Checks whether an expression equals RedactedExpression() #redacted #audit.
-/// Changed from private to public for unit testing.
-/// Returns false when value is null.
-/// </summary>
-/// <param name="value"></param>
-/// <returns>boolean</returns>
-		
-### ExplicitlyRedactAndMarkValue
-/// <summary>
-/// Method replacing the value passed with visible, grepable markers #redacted #audit.
-/// Value is in explicitly hinding sensitive data and providing the audit trail
-/// to prove it. Example:
-/// ZeroFrictionLogger.Log.LogInfo("log in using uid: " + uid +
-///     " and pwd: " + Err.ExplicitlyRedactAndMarkValue("password", pwd));
-/// The method is null safe, still returns the markers as expected when value is null.
-/// also returns the markers as expected when context is null, replacing context with
-/// a missing context message.
-/// </summary>
-/// <param name="context"></param>
-/// <param name="value"></param>
-/// <returns>[context] + #redacted #audit</returns>
-		
-### GetLogFileExtension
-/// <summary>
-/// Returns log file extension for use by host application for handling log file retention.
-/// </summary>
-/// <returns>.log</returns>
+**Returns:** boolean
 
-### GetAppName
-/// <summary>
-/// Returns the host app name using reflection. Returns "app" in case of a null value.
-/// </summary>
-/// <returns>host app name</returns>
-		
-### GetAppPath
-/// <summary>
-/// Returns host app path using System.AppContext.
-/// </summary>
-/// <returns>host app path</returns>
-		
-### GetLogPathAndFilename
-/// <summary>
-/// Returns app path and app name based logfile name.
-/// </summary>
-/// <returns>logfile path and filename</returns>
-		
-### ConvertPascalCaseToSentence
-/// <summary>
-/// Converts expression (for instance method name) in pascal case
-/// into a sentence (hopefully documenting the method).
-/// Replaces a call to the Humanizer package to remain at zero dependencies.
-/// </summary>
-/// <param name="value"></param>
-/// <returns>sentence</returns>
-		
-### LogDebug
-/// <summary>
-/// Logs message at DEBUG level. Opt-out by adding marker file:
-/// no-debug.txt in host app path, checked during log initialisation.
-/// Writes data instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="msg"></param>
-		
-### LogInfo
-/// <summary>
-/// Logs message at INFO level. Opt-out by adding marker file:
-/// no-info.txt in host app path, checked during log initialisation.
-/// Writes data instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="msg"></param>
+---
 
-### LogWarning
-/// <summary>
-/// Logs message at WARN level. Opt-out by adding marker file:
-/// no-warn.txt in host app path, checked during log initialisation.
-/// Writes data instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="msg"></param>
-		
-### LogError
-/// <summary>
-/// Logs message at ERROR level.
-/// Writes data instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="msg"></param>
-		
-### LogFatal
-/// <summary>
-/// Logs message at AUDIT level. Also writes grepable sentinel tag #audit for
-/// extracting an audit trail from log. The value lies in use when making
-/// calls to external processes, url's or API's in the host application
-/// providing a means to extract an audit trail from log using a grepper tool.
-/// Allows to provide audit trail reports without/before building one in the host app.
-/// Writes data instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="msg"></param>
-		
-### LogAudit
-/// <summary>
-/// Logs message at AUDIT level. Also writes grepable sentinel tag #audit for
-/// extracting an audit trail from log. The value lies in use when making
-/// calls to external processes, url's or API's in the host application
-/// providing a means to extract an audit trail from log using a grepper tool.
-/// Allows to provide audit trail reports without/before building one in the host app.
-/// Writes data instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="msg"></param>
-		
-### HandleException
-/// <summary>
-/// Bread-and-butter method for handling exceptions in the try-catch block.
-/// Logs at ERROR level. Also writes a speedblink message by default. Opt-out
-/// by including marker file: no-speedblink.txt in host app path,
-/// checked during log initialisation.
-/// Writes data to log instantly without caching.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="methodName"></param>
-/// <param name="errMsg"></param>
-/// <param name="stackTrace"></param>
-		
-### HandleExceptionWithoutStackTrace
-/// <summary>
-/// If you as a host app dev suspect sensitive data might leak into logfile thru
-/// the exception stack trace message, use HandleExceptionWithoutStackTrace in
-/// the try-catch block. Works similar to it's cousin HandleException but replaces
-/// the stack trace message with grepable sentinel tags #redacted #audit.
-/// Note: logger contains no logic for magically auto-hiding sensitive information.
-/// As host app dev you remain responsible to prevent sensitive data from entering logs.
-/// </summary>
-/// <param name="methodName"></param>
-/// <param name="errMsg"></param>
-		
-### InitialiseErrorHandling
-/// <summary>
-/// One stop method for starting exception handling and logging, no config needed.
-/// Attempts to create a logfile in app folder with app name and .log extension at
-/// each start of the app if possible. If write access is absent the fall back is
-/// to log to console. Failure to create or write to logfile (no write permissions)
-/// will result in an ASCII icon being displayed in console along with an explanation.
-/// If need be, redirection of console output to file in another folder
-/// using > or >> is possible on both Windows and Linux as a work around.
-/// Retention of logfiles can be achieved either by shell scripts, batch files
-/// or by the host application making a copy.
-/// </summary>
+### NotZilch  
+Checks whether a value is different from `Zilch()`.
+
+**Parameters:**  
+- `value`
+
+**Returns:** boolean
+
+---
+
+### NullExpression  
+Visual markers, grepable sentinel tag to catch an  
+uninitialized state and to prevent silent errors.
+
+**Returns:** `#null-value`
+
+---
+
+### ReplaceNull  
+Returns the passed value unless it's null, in which case it returns  
+sentinel tag `#null-value`.
+
+**Parameters:**  
+- `value`
+
+**Returns:** `#null-value`
+
+---
+
+### ReplaceNullOrEmpty  
+Returns the passed value unless it's null or empty,  
+in which case it returns `#zilch #iota #diddly-squat`.
+
+**Parameters:**  
+- `value`
+
+**Returns:** `#zilch #iota #diddly-squat`
+
+---
+
+### RedactedExpression  
+Visual marker, grepable sentinel value for replacing data to be redacted.
+
+**Returns:** `#redacted #audit`
+
+---
+
+### IsRedacted  
+Checks whether an expression equals `#redacted #audit`.  
+Changed from private to public for unit testing.  
+Returns false when value is null.
+
+**Parameters:**  
+- `value`
+
+**Returns:** boolean
+
+---
+
+### ExplicitlyRedactAndMarkValue  
+Method replacing the value passed with visible, grepable markers `#redacted #audit`.  
+Value is in explicitly hiding sensitive data and providing the audit trail to prove it.  
+
+Example:  
+
+    ZeroFrictionLogger.Log.LogInfo("log in using uid: " + uid +
+        " and pwd: " + Err.ExplicitlyRedactAndMarkValue("password", pwd));
+
+The method is null safe, still returns the markers as expected when value is null.  
+Also returns the markers as expected when context is null, replacing context with a missing context message.
+
+**Parameters:**  
+- `context`  
+- `value`
+
+**Returns:** `[context] + #redacted #audit`
+
+---
+
+### GetLogFileExtension  
+Returns log file extension for use by host application for handling log file retention.
+
+**Returns:** `.log`
+
+---
+
+### GetAppName  
+Returns the host app name using reflection. Returns `"app"` in case of a null value.
+
+**Returns:** host app name
+
+---
+
+### GetAppPath  
+Returns host app path using `System.AppContext`.
+
+**Returns:** host app path
+
+---
+
+### GetLogPathAndFilename  
+Returns app path and app name based logfile name.
+
+**Returns:** logfile path and filename
+
+---
+
+### ConvertPascalCaseToSentence  
+Converts expression (for instance method name) in PascalCase  
+into a sentence (hopefully documenting the method).  
+Replaces a call to the Humanizer package to remain at zero dependencies.
+
+**Parameters:**  
+- `value`
+
+**Returns:** sentence
+
+---
+
+### LogDebug  
+Logs message at DEBUG level. Opt-out by adding marker file:  
+`no-debug.txt` in host app path, checked during log initialisation.  
+Writes data instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `msg`
+
+---
+
+### LogInfo  
+Logs message at INFO level. Opt-out by adding marker file:  
+`no-info.txt` in host app path, checked during log initialisation.  
+Writes data instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `msg`
+
+---
+
+### LogWarning  
+Logs message at WARN level. Opt-out by adding marker file:  
+`no-warn.txt` in host app path, checked during log initialisation.  
+Writes data instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `msg`
+
+---
+
+### LogError  
+Logs message at ERROR level.  
+Writes data instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `msg`
+
+---
+
+### LogFatal  
+Logs message at AUDIT level. Also writes grepable sentinel tag `#audit` for  
+extracting an audit trail from log. Useful when making calls to external processes, URLs, or APIs  
+in the host application, providing a means to extract audit reports via grep tools.  
+Writes data instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `msg`
+
+---
+
+### LogAudit  
+Logs message at AUDIT level. Also writes grepable sentinel tag `#audit` for  
+extracting an audit trail from log. Useful when making calls to external processes, URLs, or APIs  
+in the host application, providing a means to extract audit reports via grep tools.  
+Writes data instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `msg`
+
+---
+
+### HandleException  
+Bread-and-butter method for handling exceptions in try-catch blocks.  
+Logs at ERROR level and also writes a speedblink message by default.  
+Opt-out by including marker file: `no-speedblink.txt` in host app path,  
+checked during log initialisation. Writes data to log instantly without caching.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `methodName`  
+- `errMsg`  
+- `stackTrace`
+
+---
+
+### HandleExceptionWithoutStackTrace  
+If you as a host app dev suspect sensitive data might leak into logfile through  
+the exception stack trace message, use `HandleExceptionWithoutStackTrace` in  
+the try-catch block. Works similar to its cousin `HandleException` but replaces  
+the stack trace message with grepable sentinel tags `#redacted #audit`.  
+
+**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
+As host app dev you remain responsible to prevent sensitive data from entering logs.
+
+**Parameters:**  
+- `methodName`  
+- `errMsg`
+
+---
+
+### InitialiseErrorHandling  
+One-stop method for starting exception handling and logging, no config needed.  
+Attempts to create a logfile in app folder with app name and `.log` extension at  
+each start of the app if possible. If write access is absent the fallback is  
+to log to console. Failure to create or write to logfile (no write permissions)  
+will result in an ASCII icon displayed in console with explanation.  
+Redirection of console output to file in another folder using `>` or `>>`  
+is possible on both Windows and Linux as a workaround.  
+
+Retention of logfiles can be achieved by shell scripts, batch files, or by  
+the host application making a copy.
 
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
