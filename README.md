@@ -71,6 +71,8 @@ The app creates the log at start, replacing any previous log. Retention of logfi
 ## Grepable markers
 The exception methods (and logAudit) add visual markers, grepable sentinel tags (#exception, #audit) to the log. This allows to extract and share for instance audit reports without/before building them in the host app. Used the approach in a test tool with #summary, #details, #metrics, #S2R (steps to reproduce) enabling provision of reports before having built them. This allowed for initial focus on 1. tool stability and 2. testware validation - a huge time saver. The approach allowed building fancy HTML reports with piecharts and styling later with the reduced pressure of "nice to have" instead of high pressure of "must have" features, allowing for some much needed breathing space.
 
+*Come to think of it, you don't even need ZeroFrictionLogger to pull this off.* You can probably do it already with the logger you're using right now.
+
 ## log path and location
 Logs are created in the host app bin folder, using the app name with .log extension.
 
