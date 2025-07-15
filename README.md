@@ -5,7 +5,7 @@ Features thread safe logging, fall back to console and speedblink testing. Suppo
 
 140-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
-**Note:** NuGet and GitHub pre-release documentation roll out
+**Note:** NuGet and GitHub pre-release documentation roll out.
 
 ## Why
 
@@ -20,6 +20,11 @@ A while ago the test tool I was using started crashing at 22:00. The tooling fai
 
 ### Simplicity as security feature
 Built the original version of the logger way before november 2021. Simplicity means no surprise behaviour through runtime injection.
+
+## Grepable markers
+The exception methods (and logAudit) add visual markers, grepable sentinel tags (#exception, #audit) to the log. This allows to extract and share for instance audit reports without/before building them in the host app. Used the approach in a test tool with #summary, #details, #metrics, #S2R (steps to reproduce) enabling provision of reports before having built them. This allowed for initial focus on 1. tool stability and 2. testware validation - a huge time saver. The approach allowed building fancy HTML reports with pie charts and styling later, with the reduced pressure of "nice to have" rather than high-pressure "must have" features, allowing for some much-needed breathing space.
+
+*Come to think of it, you don't even need ZeroFrictionLogger to pull this off.* You can probably do it already with the logger you're using right now.
 
 ## Security - don't slam your fingers
 The logger contains mechanisms to prevent leaking sensitive data to log. One of several features is HandleExceptionWithoutStackTrace, cousin of HandleException. Intended use for both is in the catch block. It is up to you as host app developer to make an informed choice to omit the stack trace from log when you suspect it might contain sensitive data.
@@ -67,11 +72,6 @@ Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
 
 ## Logfile retention
 The app creates the log at start, replacing any previous log. Retention of logfiles is possible using scripts, batchfiles, trusted tools or by the host app making a copy.
-
-## Grepable markers
-The exception methods (and logAudit) add visual markers, grepable sentinel tags (#exception, #audit) to the log. This allows to extract and share for instance audit reports without/before building them in the host app. Used the approach in a test tool with #summary, #details, #metrics, #S2R (steps to reproduce) enabling provision of reports before having built them. This allowed for initial focus on 1. tool stability and 2. testware validation - a huge time saver. The approach allowed building fancy HTML reports with piecharts and styling later with the reduced pressure of "nice to have" instead of high pressure of "must have" features, allowing for some much needed breathing space.
-
-*Come to think of it, you don't even need ZeroFrictionLogger to pull this off.* You can probably do it already with the logger you're using right now.
 
 ## log path and location
 Logs are created in the host app bin folder, using the app name with .log extension.
