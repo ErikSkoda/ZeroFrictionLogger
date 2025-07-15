@@ -142,7 +142,8 @@ Will look into post processing for integration with the dashboard tool Grafana a
 ## Migration
 There are **many** great and feature rich loggers out there, some including advanced telemetry. Will deliberately keep this logger simple not clever, lean and ...minimalistic. Being aware your host app may outgrow the possibilities of ZeroFrictionLogger, the best I can do to facilitate later migration to a feature rich enterprise logger is to providing transparent examples and documentation. See documentation below.
 
-## Example
+## Example log output
+```text
 2025-07-14 15:10:14 [INFO] start log.
 2025-07-14 15:10:14 [AUDIT] Start log initialisation for app: Test #audit
 2025-07-14 15:10:14 [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
@@ -170,6 +171,7 @@ There are **many** great and feature rich loggers out there, some including adva
 2025-07-14 15:10:14 [ERROR] Test exception results in pipe symbol in log
 2025-07-14 15:10:14 [ERROR] Attempted to divide by zero. #exception
 2025-07-14 15:10:14 [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
+```
 
 ## Documentation
 Following documentation will be provided
