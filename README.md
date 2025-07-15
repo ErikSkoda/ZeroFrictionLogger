@@ -32,19 +32,19 @@ The logger contains mechanisms to prevent leaking sensitive data to log. One of 
 This paragraph is like a sticker on the side of the hammer saying: Don't slam your fingers. Like the hammer the logger contains no functionality to magically auto-prevent you from slamming your fingers.
 
 ## Zero config
-No config is required. No XML, no JSON, no YAML. To start developing your app no config is needed.
+No config is required. No XML, no JSON, no YAML. You can start developing without ever needing any of that.
 
 ### Opt out levels DEBUG, INFO, WARN
 As you move from Dev to Ops you may still want to **opt out of log levels DEBUG, INFO and WARN**.
 
 ### Three Opt Out Options
-1. Comment out calls to LogDebug, LogInfo, LogWarning. Cumbersome and requires changes to code base.
+1. Comment out calls to `LogDebug`, `LogInfo`, `LogWarning`. Cumbersome and requires changes to code base.
 2. Grep out [DEBUG] [INFO] and [WARN] afterwards. Possible, but requires some scripting.
-3. Add marker files no-debug.txt, no-info.txt and no-warn.txt to the host app bin folder, checked by InitialiseErrorHandling.
+3. Add marker files `no-debug.txt`, `no-info.txt` and `no-warn.txt` to the host app bin folder, checked by `InitialiseErrorHandling`.
 
 You can still start with zero config. Can go LIVE without config. You can opt-out of log levels with minimal complexity and same code base.
 
-The log prepared by InitialiseErrorHandling will tell you (and double check) whether levels DEBUG, INFO, WARN are active - and briefly inform on how to opt-out.
+The log prepared by `InitialiseErrorHandling` will tell you (and double check) whether levels DEBUG, INFO, WARN are active - and briefly inform on how to opt-out.
 
 ### No ejection seat without parachute
 Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [AUDIT]. That would be like providing a pilot with an ejection seat without parachute.
@@ -52,23 +52,12 @@ Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [
 While a pilot might be grateful for an ejection seat to leave a burning plane, the gratitude probably lasts longer if a parachute is included.
 
 ## Speedblink testing
-The exception handling methods include a visual marker, grepable sentinel tag designed to stand out of monotonous log lines.
-
-### idea
-Builds on the idea the human brain is hard wired to perceive movement as danger. A literal life hack to survive in a dangerous environment - the Savannah.
-
-When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant.
-
-When scanning the log at speed the marker appears as movement and is more likely to catch attention in the monotony of log lines.
-
-### Opt out
-- **Opt out of speedblink marker** by adding no-speedblink.txt in the host app bin folder, ch1ecked by InitialiseErrorHandling
-- Alternatively grep out #speedblink afterwards, combining visual markers for improved likelyhood of pipeline compliance.
+*(Pending attribution confirmation.)*
 
 ## Timezone - UTC by default, local possible
 Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
 
-**Opt out of Utc time** in favor of local time by adding marker file no-utc.txt in host app bin folder.
+**Opt out of Utc time** in favor of local time by adding marker file `no-utc.txt` in host app bin folder.
 
 ## Logfile retention
 The app creates the log at start, replacing any previous log. Retention of logfiles is possible using scripts, batchfiles, trusted tools or by the host app making a copy.
@@ -106,22 +95,21 @@ catch (Exception ex)
 ```
 
 ### Opt out of default behaviour, complete list
-
 You may want to customize logger behaviour. Here is how to do it.
 
-| Opt out of       | Marker file         | Notes                                                            |
-|------------------|---------------------|------------------------------------------------------------------|
-| log level DEBUG  | `no-debug.txt`      | Checked once by `InitialiseErrorHandling`                       |
-| log level INFO   | `no-info.txt`       | Checked once by `InitialiseErrorHandling`                       |
-| log level WARN   | `no-warn.txt`       | Checked once by `InitialiseErrorHandling`                       |
-| log level ERROR  | **not possible**    | Always logged                                                   |
-| log level FATAL  | **not possible**    | Always logged                                                   |
-| log level AUDIT  | **not possible**    | Always logged                                                   |
-| speedblink text  | `no-speedblink.txt` | Checked once by `InitialiseErrorHandling`                       |
-| using UTC time   | `no-utc.txt`        | Checked once by `InitialiseErrorHandling`, uses local time      |
+| Opt out of       | Marker file         | Notes                                                                 |
+|------------------|---------------------|-----------------------------------------------------------------------|
+| log level DEBUG  | `no-debug.txt`      | Checked once by `InitialiseErrorHandling`                            |
+| log level INFO   | `no-info.txt`       | Checked once by `InitialiseErrorHandling`                            |
+| log level WARN   | `no-warn.txt`       | Checked once by `InitialiseErrorHandling`                            |
+| log level ERROR  | **not possible**    | Always logged                                                        |
+| log level FATAL  | **not possible**    | Always logged                                                        |
+| log level AUDIT  | **not possible**    | Always logged                                                        |
+| speedblink text  | `no-speedblink.txt` | Checked once by `InitialiseErrorHandling`                            |
+| using UTC time   | `no-utc.txt`        | Checked once by `InitialiseErrorHandling`, alternative is local time |
 
 
-*InitialiseErrorHandling checks marker file presence in the host app bin folder.*
+*`InitialiseErrorHandling` checks marker file presence in the host app bin folder.* The log starts by sharing an update on customized behaviour and briefly informs you on how to opt-out.
 
 ## UTF-8
 UTF-8 Encoding without BOM should take care of compatibility with many other tools downstream.
@@ -142,7 +130,7 @@ Scaling is possible with some opt out features, scripts and tools around the two
 Will look into post processing for integration with the dashboard tool Grafana at a later stage.
 
 ## Migration
-There are **many** great and feature rich loggers out there, some including advanced telemetry. Will deliberately keep this logger simple not clever, lean and ...minimalistic. Being aware your host app may outgrow the possibilities of ZeroFrictionLogger, the best I can do to facilitate later migration to a feature rich enterprise logger is to providing transparent examples and documentation. See documentation below.
+There are **many** great and feature rich loggers out there, some including advanced telemetry. Will deliberately keep this logger simple not clever, lean and ...minimalistic. Being aware your host app may outgrow the possibilities of ZeroFrictionLogger, the best I can do to facilitate later migration to a feature rich enterprise logger is to provide transparent examples and full documentation. See documentation below.
 
 ## Example log output
 ```text
