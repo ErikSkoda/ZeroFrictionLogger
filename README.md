@@ -77,24 +77,31 @@ Logs are created in the host app bin folder, using the app name with .log extens
 ## Quick start
 
 ### Using directive
+```csharp
 using System.Reflection;
-
 using Err = ZeroFrictionLogger.Log;
+```
 
 ### Initialise
+```csharp
 InitialiseErrorHandling();
+```
 
 ### Handle exception
+```csharp
 catch (Exception ex)
 {
     Err.HandleException(MethodBase.GetCurrentMethod().Name, ex.Message, ex.StackTrace);
 }
+```
 
 ### ...without stack trace
+```csharp
 catch (Exception ex)
 {
     Err.HandleExceptionWithoutStackTrace(MethodBase.GetCurrentMethod().Name, ex.Message);
 }
+```
 
 ### Opt out of default behaviour, complete list
 
