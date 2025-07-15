@@ -50,13 +50,17 @@ While a pilot might be grateful for an ejection seat to leave a burning plane, t
 The exception handling methods include a visual marker, grepable sentinel tag designed to stand out of monotonous log lines.
 
 ### idea
-Builds on the idea the human brain is hard wired to perceive movement as danger. A literal life hack to survive in a dangerous environment - the Savannah. When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant. When scanning the log at speed the marker appears as movement and is more likely to catch attention in the monotony of log lines.
+Builds on the idea the human brain is hard wired to perceive movement as danger. A literal life hack to survive in a dangerous environment - the Savannah.
+
+When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant.
+
+When scanning the log at speed the marker appears as movement and is more likely to catch attention in the monotony of log lines.
 
 ### Opt out
-- **Opt out of speedblink marker** by adding no-speedblink.txt in the host app bin folder, checked by InitialiseErrorHandling
+- **Opt out of speedblink marker** by adding no-speedblink.txt in the host app bin folder, ch1ecked by InitialiseErrorHandling
 - Alternatively grep out #speedblink afterwards, combining visual markers for improved likelyhood of pipeline compliance.
 
-## Timezone
+## Timezone - UTC by default, local possible
 Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
 
 **Opt out of Utc time** in favor of local time by adding marker file no-utc.txt in host app bin folder.
@@ -74,6 +78,7 @@ Logs are created in the host app bin folder, using the app name with .log extens
 
 ### Using directive
 using System.Reflection;
+
 using Err = ZeroFrictionLogger.Log;
 
 ### Initialise
@@ -90,6 +95,20 @@ catch (Exception ex)
 {
     Err.HandleExceptionWithoutStackTrace(MethodBase.GetCurrentMethod().Name, ex.Message);
 }
+
+### opt out of default behaviour, complete list
+You may want to customize logger behaviour. Here is how to do it.
+
+| Opt out of      | Marker file       | Notes                                                            |
+| log level DEBUG | no-debug.txt      | Checked once by InitialiseErrorHandling                          |
+| log level INFO  | no-info.txt       | Checked once by InitialiseErrorHandling                          |
+| log level WARN  | no-warn.txt       | Checked once by InitialiseErrorHandling                          |
+| log level ERROR | **not possible**  | always logged                                                    |
+| log level FATAL | **not possible**  | always logged                                                    |
+| log level AUDIT | **not possible**  | always logged                                                    |
+| speedblink text | no-speedblink.txt | Checked once by InitialiseErrorHandling                          |
+| Using UTC time  | no-utc.txt        | Checked once by InitialiseErrorHandling, uses local time instead |
+| InitialiseErrorHandling checks the presence in the host app bin folder.                                |
 
 ## UTF-8
 UTF-8 Encoding without BOM should take care of compatibility with many other tools downstream.
