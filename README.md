@@ -103,9 +103,9 @@ You may want to customize logger behaviour. Here is how to do it.
 | log level DEBUG | `no-debug.txt`      | Checked once by InitialiseErrorHandling                          |
 | log level INFO  | `no-info.txt`       | Checked once by InitialiseErrorHandling                          |
 | log level WARN  | `no-warn.txt`       | Checked once by InitialiseErrorHandling                          |
-| log level ERROR | `**not possible**`  | always logged                                                    |
-| log level FATAL | `**not possible**`  | always logged                                                    |
-| log level AUDIT | `**not possible** ` | always logged                                                    |
+| log level ERROR | **not possible**    | always logged                                                    |
+| log level FATAL | **not possible**    | always logged                                                    |
+| log level AUDIT | **not possible**    | always logged                                                    |
 | speedblink text | `no-speedblink.txt` | Checked once by InitialiseErrorHandling                          |
 | Using UTC time  | `no-utc.txt`        | Checked once by InitialiseErrorHandling, uses local time instead |
 
