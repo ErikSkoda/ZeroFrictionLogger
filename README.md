@@ -1,7 +1,7 @@
 ## ZeroFrictionLogger
 Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
 
-Features thread safe logging, fall back to console and speedblink testing. Supports .Net Core 2.1 and 8.0 LTS, builds and runs on Windows and Linux. Writes to log without caching.
+Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLLs** (*to be released*) will target 6.0 and 8.0 LTS; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub.
 
 140-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
@@ -16,7 +16,7 @@ Way back I had to use a mandatory logger. The logger refused to log stack traces
 Way back the test tool I was working on started crashing intermittently at midnight. The mandatory logger included a midnight roll over feature for log file retention. The documentation was elaborate. Looked for but did not find info on how to opt out of the midnight roll over feature. The need was for simple not clever. No additional vulnerability.
 
 ### No caching, no loss of data
-A while ago the test tool I was using started crashing at 22:00. The tooling failed where it had never failed before, performing trivial tasks during startup which had worked thousands of times for many years. The consistent timing (22:00 plus a few sec) provided a clue the tool might be killed by an external process. Windows Event Viewer confirmed the suspicion. After reaching out to security it turned out they had introduced a new audit tool capable of killing "suspicious" processes. We solved the issue with a slightly changed regression test start time and adding the tool to an allow list. No caching meant no loss of data. The time stamp of the last successfully written log line provided info for root cause analysis.
+A while ago the test tool I was using started crashing at 22:00. The tooling failed where it had never failed before, performing trivial tasks during startup which had worked thousands of times for many years. The consistent timing (22:00 plus a few sec) provided a clue the tool might be killed by an external process. Windows Event Viewer confirmed the suspicion. After reaching out to security it turned out they had introduced a new audit tool capable of killing "suspicious" processes. We solved the issue with a slightly changed regression test start time and adding the tool to an allow list. No caching meant no loss of data. The time stamp of the last successfully written log line provided a clue for root cause analysis.
 
 ### Simplicity as security feature
 Built the original version of the logger way before november 2021. Simplicity means no surprise behaviour through runtime injection.
@@ -29,7 +29,7 @@ The exception methods (and logAudit) add visual markers, grepable sentinel tags 
 ## Security - don't slam your fingers
 The logger contains mechanisms to prevent leaking sensitive data to log. One of several features is HandleExceptionWithoutStackTrace, cousin of HandleException. Intended use for both is in the catch block. It is up to you as host app developer to make an informed choice to omit the stack trace from log when you suspect it might contain sensitive data.
 
-This paragraph is like a sticker on the side of the hammer saying: Don't slam your fingers. Like the hammer the logger contains no functionality to magically auto-prevent you from slamming your fingers.
+This paragraph is like a sticker on the side of the hammer saying: Don't slam your fingers. Like a hammer the logger contains no functionality to magically auto-prevent you from slamming your fingers.
 
 ## Zero config
 No config is required. No XML, no JSON, no YAML. You can start developing without ever needing any of that.
@@ -47,12 +47,22 @@ You can still start with zero config. Can go LIVE without config. You can opt-ou
 The log prepared by `InitialiseErrorHandling` will tell you (and double check) whether levels DEBUG, INFO, WARN are active - and briefly inform on how to opt-out.
 
 ### No ejection seat without parachute
-Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [AUDIT]. That would be like providing a pilot with an ejection seat without parachute.
+Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [AUDIT]. That would be like providing a pilot with an ejection seat but without parachute.
 
 While a pilot might be grateful for an ejection seat to leave a burning plane, the gratitude probably lasts longer if a parachute is included.
 
 ## Speedblink testing
-*(Pending attribution confirmation.)*
+The exception handling methods include a visual marker, grepable sentinel tag designed to stand out of monotonous log lines.
+
+### idea
+*Builds on an insight taught by James Bach, creator of the Rapid Software Testing Methodology.*
+The idea being the human brain is hard wired to perceive movement as danger. A literal life hack to survive in a dangerous environment - the savannah.
+
+When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant.
+
+### Opt out
+- **Opt out of speedblink marker** by adding `no-speedblink.txt` in the host app bin folder, checked by `InitialiseErrorHandling`
+- Alternatively grep out #speedblink afterwards, combining visual markers with improved likelyhood of pipeline compliance.
 
 ## Timezone - UTC by default, local possible
 Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
@@ -65,7 +75,7 @@ The app creates the log at start, replacing any previous log. Retention of logfi
 ## log path and location
 Logs are created in the host app bin folder, using the app name with .log extension.
 
-## Quick start
+## Quick Start
 
 ### Using directive
 ```csharp
@@ -94,22 +104,70 @@ catch (Exception ex)
 }
 ```
 
-### Opt out of default behaviour, complete list
-You may want to customize logger behaviour. Here is how to do it.
+### Opt out of default behaviour, full list
+You may want to customize logger behaviour. Here is how:
 
-| Opt out of       | Marker file         | Notes                                                                 |
-|------------------|---------------------|-----------------------------------------------------------------------|
-| log level DEBUG  | `no-debug.txt`      | Checked once by `InitialiseErrorHandling`                            |
-| log level INFO   | `no-info.txt`       | Checked once by `InitialiseErrorHandling`                            |
-| log level WARN   | `no-warn.txt`       | Checked once by `InitialiseErrorHandling`                            |
-| log level ERROR  | **not possible**    | Always logged                                                        |
-| log level FATAL  | **not possible**    | Always logged                                                        |
-| log level AUDIT  | **not possible**    | Always logged                                                        |
-| speedblink text  | `no-speedblink.txt` | Checked once by `InitialiseErrorHandling`                            |
-| using UTC time   | `no-utc.txt`        | Checked once by `InitialiseErrorHandling`, alternative is local time |
+| Opt out of       | Marker file         | Notes                                                                   |
+|------------------|---------------------|-------------------------------------------------------------------------|
+| log level DEBUG  | `no-debug.txt`      | Checked once by `InitialiseErrorHandling()`                            |
+| log level INFO   | `no-info.txt`       | Checked once by `InitialiseErrorHandling()`                            |
+| log level WARN   | `no-warn.txt`       | Checked once by `InitialiseErrorHandling()`                            |
+| log level ERROR  | **not possible**    | Always logged                                                          |
+| log level FATAL  | **not possible**    | Always logged                                                          |
+| log level AUDIT  | **not possible**    | Always logged                                                          |
+| speedblink text  | `no-speedblink.txt` | Checked once by `InitialiseErrorHandling()`                            |
+| using UTC time   | `no-utc.txt`        | Checked once by `InitialiseErrorHandling()`, alternative is local time |
 
+*`InitialiseErrorHandling()` checks marker file presence in the host app bin folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
 
-*`InitialiseErrorHandling` checks marker file presence in the host app bin folder.* The log starts by sharing an update on customized behaviour and briefly informs you on how to opt-out.
+### NuGet package coming soon
+Nuget package targetting .NET Core 6.0 and 8.0 is coming soon.
+To use the logger in older environments, build from source (see below)
+
+### TestZeroFriction Source and Unit Test (Living Documentation)
+Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** from GitHub, containing:
+
+**Logger core:**
+- `Log.cs`
+- `PascalToSentence.cs`
+
+**Test Suite:**
+- `TestCases.cs` (60-ish xUnit unit tests)
+- `TestSupport.cs` (log content check)
+- `AssemblyInfo.cs` (enforce sequential xUnit test execution)
+
+**Test Project Config:**
+- `TestZeroFrictionLogger.sln`
+- `Test.csproj` (.NET Core project file)
+
+**Note:** The test project uses [xUnit](https://xunit.net/?tabs=cs) for testing. Make sure you have it installed to build and run the tests. The test project uses .NET 8.0 and the latest xUnit packages. While the logger core supports .NET 6.0 (and earlier), the *test project* will **not** build on .NET 6.0.
+
+Tried and failed to downgrade to earlier versions of `xunit`, `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk` to support both .NET Core 8.0 and 6.0. Currently, the xUnit test project - using the latest components - only builds and runs on **.NET Core 8.0**. May resurrect a minimalistic, archaic unit test tool from the digital scrap heap to support unit testing the logger on older .NET Core versions still in corporate use.
+
+:white_check_mark: **Unit tests pass on both Windows and Linux (Ubuntu LTS)**
+All unit tests were confirmed passing before sharing the test project on GitHub.
+
+### Platform Compatibility Matrix
+
+| ZeroFrictionLogger                               | Windows        | Linux (LTS)    | Mac OS           |
+|--------------------------------------------------|----------------|----------------|------------------|
+| Builds on .NET Core 8.0                          | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
+| Runs on .NET Core 8.0 (demo app)                 | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
+| xUnit unit tests passing with .NET Core 8.0      | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
+| Builds on .NET Core 6.0                          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed   | :hourglass_flowing_sand: Not confirmed |
+| Runs on .NET Core 6.0 (demo app)                 | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed   | :hourglass_flowing_sand: Not confirmed |
+| xUnit unit tests passing with .NET Core 6.0      | :x: Not building | :x: Not building | :hourglass_flowing_sand: Not confirmed   |
+| Builds on .NET Core 2.1 *(Out of Service)*       | :white_check_mark: builds :warning: end-of-life   | :warning: end-of-life   | :warning: end-of-life     |
+| Runs on .NET Core 2.1 *(Out of Service)* (demo)  | :white_check_mark: runs :warning: end-of-life     | :warning: end-of-life   | :warning: end-of-life     |
+
+:warning: .NET Core 2.1 is out of support.
+
+### Build from Source
+1. Download `log.cs` and `PascalToSentence.cs` from GitHub.
+2. In Solution Explorer:
+- Right-click on your Project
+- Select **Add -> Existing item...**
+3. Select the two downloaded `.cs` files and click **Add**
 
 ## UTF-8
 UTF-8 Encoding without BOM should take care of compatibility with many other tools downstream.
@@ -121,8 +179,8 @@ Failure to create or write to logfile to the host app bin folder (no write permi
 Builds on Windows and Linux, Demo app runs on Windows and Linux. All unit tests pass on Windows and Linux. **Should** work on MacOS - which is a fancy way of saying it still needs to be confirmed.
 
 ## Compatibility
-Developing, building, running and unit testing using .Net Core 8.0 LTS.
-Builds and runs on Windows in a console application with .Net Core 2.1 (Out of Support)
+Developing, building, running and unit testing using .NET Core 8.0 LTS.
+Builds and runs on Windows in a console application with .NET Core 2.1 (Out of Support)
 
 ## Scaling
 The logger allows a quick start at small scale.
@@ -130,38 +188,42 @@ Scaling is possible with some opt out features, scripts and tools around the two
 Will look into post processing for integration with the dashboard tool Grafana at a later stage.
 
 ## Migration
-There are **many** great and feature rich loggers out there, some including advanced telemetry. Will deliberately keep this logger simple not clever, lean and ...minimalistic. Being aware your host app may outgrow the possibilities of ZeroFrictionLogger, the best I can do to facilitate later migration to a feature rich enterprise logger is to provide transparent examples and full documentation. See documentation below.
+There are **many** great and feature rich loggers out there, some including advanced telemetry. Will deliberately keep this logger simple not clever, lean and ...minimalistic. Being aware your host app may outgrow the possibilities of ZeroFrictionLogger, the best I can do to facilitate later migration to a feature rich enterprise logger is to provide transparent examples, unit tests and full documentation. See below.
 
 ## Example log output
 ```text
-2025-07-14 15:10:14 [INFO] start log.
-2025-07-14 15:10:14 [AUDIT] Start log initialisation for app: Test #audit
-2025-07-14 15:10:14 [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
-2025-07-14 15:10:14 [AUDIT] info enabled = True due to presence/absence of no-info.txt in app path at initialisation #audit
-2025-07-14 15:10:14 [AUDIT] warn enabled = True due to presence/absence of no-warn.txt in app path at initialisation #audit
-2025-07-14 15:10:14 [AUDIT] speedblink icon enabled = True due to presence/absence of no-speedblink.txt in app path at initialisation #audit
-2025-07-14 15:10:14 [DEBUG] double check loglevel debug
-2025-07-14 15:10:14 [INFO] double check loglevel info
-2025-07-14 15:10:14 [WARN] double check loglevel warn
-2025-07-14 15:10:14 [AUDIT] Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] can not be disabled. #audit
-2025-07-14 15:10:14 [AUDIT] Log initialisation complete. #audit
+2025-07-21 08:29:17 [AUDIT] start log. #audit
+2025-07-21 08:29:17 [AUDIT] Start log initialisation for app: ConsoleAppWithLogging #audit
+2025-07-21 08:29:17 [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
+2025-07-21 08:29:17 [AUDIT] info enabled = True due to presence/absence of no-info.txt in app path at initialisation #audit
+2025-07-21 08:29:17 [AUDIT] warn enabled = True due to presence/absence of no-warn.txt in app path at initialisation #audit
+2025-07-21 08:29:17 [AUDIT] utc enabled = True due to presence/absence of no-utc.txt in app path at initialisation #audit
+2025-07-21 08:29:17 [AUDIT] speedblink icon enabled = True due to presence/absence of no-speedblink.txt in app path at initialisation #audit
+2025-07-21 08:29:17 [DEBUG] double check loglevel debug
+2025-07-21 08:29:17 [INFO] double check loglevel info
+2025-07-21 08:29:17 [WARN] double check loglevel warn
+2025-07-21 08:29:17 [AUDIT] Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] can not be disabled. #audit
+2025-07-21 08:29:17 [AUDIT] Log initialisation complete. #audit
 ...
-2025-07-14 15:10:14 [INFO] Rain in Ireland has been referred to me as liquid sunshine.
-2025-07-14 15:10:14 [WARN] Animal print pants out control.
-2025-07-14 15:10:14 [ERROR] Pizza with pineapple is a recoverable error.
-2025-07-14 15:10:14 [FATAL] It was at that moment Nathan knew, he'd bleep-ed up.
+2025-07-21 08:29:35 [INFO] Rain in Ireland has been referred to me as liquid sunshine.
+2025-07-21 08:29:35 [WARN] Animal print pants out control.
+2025-07-21 08:29:35 [ERROR] Pizza with pineapple is a recoverable error.
+2025-07-21 08:29:35 [FATAL] It was at that moment Nathan knew, he'd bleep-ed up.
 ...
-2025-07-14 15:10:14 #speedblink
+2025-07-21 08:29:35 #speedblink
       ___   __  __   ___    #speedblink
      |  _|  \ \/ /  |_  |   #speedblink
      | |     \  /     | |   #speedblink
      | |_    /  \    _| |   #speedblink
      |___|  /_/\_\  |___|   #speedblink
-                           .#speedblink
-2025-07-14 15:10:14 [ERROR] Test exception results in pipe symbol in log
-2025-07-14 15:10:14 [ERROR] Attempted to divide by zero. #exception
-2025-07-14 15:10:14 [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
+                            #speedblink
+2025-07-21 08:29:35 [ERROR] Cause exception for demo purpose
+2025-07-21 08:29:35 [ERROR] Attempted to divide by zero. #exception
+2025-07-21 08:29:35 [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
 ```
+
+## Unit tests
+Check out the xunit unit test project for verification and living documentation through practical examples.
 
 ## Full documentation  
 Public method documentation of `log.cs`.
@@ -209,7 +271,7 @@ sentinel tag `#null-value`.
 **Parameters:**  
 - `value`
 
-**Returns:** `#null-value`
+**Returns:** `value` or `#null-value`
 
 ---
 
@@ -220,7 +282,7 @@ in which case it returns `#zilch #iota #diddly-squat`.
 **Parameters:**  
 - `value`
 
-**Returns:** `#zilch #iota #diddly-squat`
+**Returns:** `value` or `#zilch #iota #diddly-squat`
 
 ---
 
