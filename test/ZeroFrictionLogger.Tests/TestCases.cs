@@ -34,7 +34,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void HandleException_StackTraceWithCurlyBraces_LogExpressionContainsCurlyBraces()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string newLine = Environment.NewLine;
         string exStackTrace =
             "no such element: Unable to locate element: {\"method\":\"xpath\",\"selector\":" +
@@ -75,7 +75,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-info.txt");
         File.Delete(optOutPathAndFilename);
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string info = "Rain in Ireland has been referred to me as liquid sunshine.";
         string expected = "[INFO] " + info;
 
@@ -93,7 +93,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-info.txt");
         File.Create(optOutPathAndFilename).Close();
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string info = "If marker file: no-info.txt exists in app path when calling " +
             "InitialiseErrorHandling, calls to LogInfo should not result in a log entry " +
             "at [INFO] level but go ignored instead.";
@@ -113,7 +113,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-warn.txt");
         File.Create(optOutPathAndFilename).Close();
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string warning = "If marker file: no-warn.txt exists in app path when calling " +
             "InitialiseErrorHandling, calls to LogWarning should not result in a log entry " +
             "at [WARN] level but go ignored instead.";
@@ -133,7 +133,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-warn.txt");
         File.Delete(optOutPathAndFilename);
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string warning = "Animal print pants out control";
         string expected = "[WARN] " + warning;
 
@@ -149,7 +149,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LogError_PizzaWithPineApple_ContainsError()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string error = "Pizza with pineapple is a recoverable error.";
         string expected = "[ERROR] " + error;
 
@@ -165,7 +165,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LogFatal_ItWasAtThatMomentNathanKnew_ContainsBleepedUp()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string fatal = "It was at that moment Nathan knew, he'd bleep-ed up.";
         string expected = "[FATAL] " + fatal;
 
@@ -183,7 +183,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-debug.txt");
         File.Delete(optOutPathAndFilename);
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string debug = "Penicillin, discovered by accident, " +
             "has saved between 80 and 200 million lives.";
         string expected = "[DEBUG] " + debug;
@@ -202,7 +202,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-debug.txt");
         File.Create(optOutPathAndFilename).Close();
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string debug = "If marker file: no-debug.txt exists in app path when calling " +
             "InitialiseErrorHandling, calls to LogDebug should not result in a log entry " +
             "at [DEBUG] level but go ignored instead.";
@@ -222,7 +222,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-speedblink.txt");
         File.Delete(optOutPathAndFilename);
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string expected = "#speedblink";
 
         // act
@@ -237,7 +237,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void HandleException_ErrMsgAndStackTraceBothNull_MethodNameGetsLogged()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         bool actual = false;
         string methodName = MethodBase.GetCurrentMethod().Name;
 
@@ -260,11 +260,11 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void GetAppName_EqualsTest_True()
+    public static void GetAppName_EqualsTestLogger_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
-        const string expected = "Test";
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string expected = "TestLogger";
 
         // act
         string actual = Err.GetAppName();
@@ -274,10 +274,242 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
+    public static void GetAppName_InitialisedWithReflection_DoesNotContainXunit()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string unexpected = "xunit";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithEmptyString_DoesNotContainZeroFrictionLogger()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("");
+        const string unexpected = "ZeroFrictionLogger";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithNull_DoesNotCOntainZeroFrictionLogger()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(null);
+        const string unexpected = "ZeroFrictionLogger";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithEmptyString_DoesNotContainDotNet()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("");
+        const string unexpected = "DotNet";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithNull_DoesNotContainDotNet()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(null);
+        const string unexpected = "DotNet";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithNull_EqualsTestLogger()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(null);
+        const string unexpected = "TestLogger";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(unexpected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithEmptyString_EqualsTestLogger()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("");
+        const string expected = "TestLogger";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithEmptyString_IsNotEmpty()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("");
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.NotEmpty(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_RegularHostAppName_True()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK("regular-host-app-name");
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_null_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK(null);
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_emptyString_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK("");
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_ContainsDotNet_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK("dotnet");
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_ContainsXunit_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK("xunit");
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_ContainsTestHost_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK("TESTHOST");
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_ContainsZeroFrictionLogger_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK("ZeroFrictionLogger");
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void IsAppNameOK_ContainsDot_False()
+    {
+        // arrange // act
+        bool actual = Err.IsAppNameOK(".");
+
+        // assert
+        Assert.False(actual);
+    }
+
+    //[Fact]
+    public static void GetAppName_InitialisedWithNull_IsNotEmpty()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(null);
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.NotEmpty(actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithNull_DoesNotContainZilch()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(null);
+        string unexpected = "zilch";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithEmptyString_DoesNotContainZilch()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("");
+        string unexpected = "zilch";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.DoesNotContain(unexpected, actual, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    [Fact]
     public static void GetAppPath_EndsWithNet8Dot0_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string expected = "net8.0";
 
         // act
@@ -288,10 +520,49 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
+    public static void FallBackExecutingAssembly_EqualsTestLogger()
+    {
+        // arrange
+        string expected = "TestLogger";
+
+        // act
+        string appName = Err.FallBackExecutingAssembly();
+
+        // assert
+        Assert.Equal(expected, appName);
+    }
+
+    [Fact]
+    public static void FallBackCallingAssembly_EqualsTestLogger()
+    {
+        // arrange
+        string expected = "TestLogger";
+
+        // act
+        string appName = Err.FallBackCallingAssembly();
+
+        // assert
+        Assert.Equal(expected, appName);
+    }
+
+    [Fact]
+    public static void FallBackEnvCmdLineArgsZero_EqualsTestLogger_Fail()
+    {
+        // arrange
+        string expected = "TestLogger";
+
+        // act
+        string appName = Err.FallBackEnvCmdLineArgsZero();
+
+        // assert
+        Assert.Equal(expected, appName); // Fail. Unit test from source returns: `testhost` :-/
+    }
+
+    [Fact]
     public static void InitialiseErrorHandling_LogFileExistsAfterwards_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string logfile = Err.GetLogPathAndFilename();
 
         // act
@@ -305,7 +576,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void GetLogPathAndFileName_ContainsNet8Dot0_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "net8.0";
 
         // act
@@ -334,7 +605,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void GetLogPathAndFileName_EndsWithDotLog_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = ".log";
 
         // act
@@ -350,7 +621,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-info.txt");
         File.Delete(optOutPathAndFilename);
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string info = "Rain in Ireland has been referred to me as liquid sunshine.";
 
         // act
@@ -367,7 +638,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // arrange
         string optOutPathAndFilename = Path.Combine(Err.GetAppPath(), "no-warn.txt");
         File.Delete(optOutPathAndFilename);
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string warning = "Animal print pants out control.";
 
         // act
@@ -382,7 +653,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LogError_LogContainsErrorBetweenBrackets_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string error = "Pizza with pineapple is a recoverable error.";
 
         // act
@@ -397,7 +668,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LogAudit_LogContainsAuditTag_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
 
         // act
         Err.LogAudit("call external process for reading free available memory on tool server.");
@@ -411,7 +682,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void Zilch_ContainsZilch_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "#zilch";
 
         // act
@@ -426,7 +697,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void Zilch_ContainsIota_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "#iota";
 
         // act
@@ -441,8 +712,8 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void Zilch_ContainsDiddlySquat_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
-        const string expected = "#diddly-squat";
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string expected = "#diddly squat";
 
         // act
         string actual = Err.Zilch();
@@ -456,7 +727,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void Zilch_EqualToLiquidSunshine_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string rainInIreland = "Liquid sunshine";
         const bool expected = false;
 
@@ -471,8 +742,8 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void IsZilch_HashTagZilchHashtagIotaHashtagDiddlySquat_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
-        const string zilch = "#zilch #iota #diddly-squat";
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string zilch = "#zilch #iota #diddly squat";
 
         // act
         bool actual = Err.IsZilch(zilch);
@@ -485,7 +756,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void IsZilch_FootMassage_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string footMassage = "A footmassage is nothing.";
 
         // act
@@ -499,7 +770,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void NullExpression_ContainsHashTagNull_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string hashTagNull = "#null";
 
         // act
@@ -513,7 +784,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void NullExpression_ContainsNullReference_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string nullReference = "NullReference";
 
         // act
@@ -527,7 +798,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void NullExpression_EqualsHashtagNullDashValue_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string hashTagNullValue = "#null-value";
 
         // act
@@ -541,7 +812,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void RedactedExpression_Call_ResultContainsHashtagRedacted()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "#redacted";
 
         // act
@@ -555,7 +826,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void RedactedExpression_Call_ResultContainsHashtagAudit()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "#audit";
 
         // act
@@ -569,7 +840,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void IsRedacted_TiramisuRecipe_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string data = "Top secret authentic Veneto region tiramisu recipe: ...";
 
         // act
@@ -583,7 +854,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void IsRedacted_HashtagRedactedHashTagAudit_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string data = "#redacted #audit";
 
         // act
@@ -597,7 +868,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void IsRedacted_NullValue_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
 
         // act
         bool actual = Err.IsRedacted(null);
@@ -610,7 +881,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void IsRedacted_EmptyString_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
 
         // act
         bool actual = Err.IsRedacted("");
@@ -623,7 +894,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LogAudit_AllowsGreppingAuditTrailFromLog_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
 
         // act
         Err.LogAudit("Call customer data API customerDataService");
@@ -640,7 +911,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LogAudit_MagicallyAutoHideSensitiveData_False()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string ssnNumber = "ssn number: 123-45-6789";
 
         // act
@@ -654,7 +925,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ExplicitlyRedactAndMarkValue_SensitiveData_ValueIsRedacted()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string pwdTopSecretFriedChickenRecipe = "123Pizza!";
 
         // act
@@ -668,7 +939,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ExplicitlyRedactAndMarkValue_SensitiveData_ContextIsAbsolutelyNotRedacted()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string pwd = "123Pizza!";
         string contextHoldingSensitiveData = "Politican XYZ has a hair piece";
 
@@ -683,7 +954,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ExplicitlyRedactAndMarkValue_SafeUsingNullForValue_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string expected = "[password] " + Err.RedactedExpression();
 
         // act
@@ -697,7 +968,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ExplicitlyRedactAndMarkValue_SafeUsingNullForContext_True()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         string pwd = "MyFirstPetsNameWasHermanMunst3r";
         string expected = "host app passed no context";
 
@@ -712,7 +983,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ReplaceNull_PassNull_ReturnsPlaceHolder()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "#null-value";
 
         // act
@@ -726,7 +997,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ReplaceNull_PassData_ReturnsData()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "Name of Quarter Pounder in France";
 
         // act
@@ -740,8 +1011,8 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ReplaceNullOrEmpty_PassEmptyString_ResultContainsHashtagZilch()
     {
         // arrange
-        Err.InitialiseErrorHandling();
-        const string expected = "#zilch #iota #diddly-squat";
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string expected = "#zilch #iota #diddly squat";
 
         // act
         string actual = Err.ReplaceNullOrEmpty("");
@@ -754,8 +1025,8 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ReplaceNullOrEmpty_PassNull_ResultContainsHashtagZilch()
     {
         // arrange
-        Err.InitialiseErrorHandling();
-        const string expected = "#zilch #iota #diddly-squat";
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string expected = "#zilch #iota #diddly squat";
 
         // act
         string actual = Err.ReplaceNullOrEmpty(null);
@@ -768,7 +1039,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ConvertPascalCaseToSentence_ValueInPascalCase_ReturnsSentence()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "Convert pascal case to sentence";
 
         // act
@@ -782,7 +1053,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ConvertPascalCaseToSentence_ValueEndsWithAcronym_SentenceAsWell()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "Convert sentence ending with all caps HTML";
 
         // act
@@ -796,7 +1067,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void ConvertPascalCaseToSentence_ValueBeginsWithAcronym_SentenceAsWell()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = "HTML stands for hypertext etc etc";
 
         // act
@@ -810,7 +1081,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void GetLogFileExtension_EqualsDotLog()
     {
         // arrange
-        Err.InitialiseErrorHandling();
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string expected = ".log";
 
         // act
@@ -829,7 +1100,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         try
         {
             // act
-            Err.InitialiseErrorHandling();
+            Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
 
             ok = true;
         }
