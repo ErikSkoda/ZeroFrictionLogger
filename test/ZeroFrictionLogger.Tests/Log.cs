@@ -25,8 +25,9 @@ using System.Text;
 using System.IO; //required to make Path.DirectorySeparatorChar #compliant with #legacy .Net
 using System;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335; //required to make AppContext.BaseDirectory
-                                          //#compliant with #legacy .Net
+using System.Runtime.CompilerServices;
+//using System.Reflection.Metadata.Ecma335; //required to make AppContext.BaseDirectory
+//                                          //#compliant with #legacy .NET Core 2.1
 
 //namespace ZeroFrictionLogger; // Not #compliant with #legacy .Net Core 2.1 (Out of Service)
 namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Core 8.0 LTS
@@ -38,13 +39,14 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         private static bool _warnEnabled = true;
         private static bool _speedBlinkEnabled = true;
         private static bool _utcEnabled = true;
+        private static string _appName;
 
         /// <summary>
         /// Visual markers, grepable sentinel tags to catch an
         /// uninitialized state and to prevent silent errors.
         /// </summary>
-        /// <returns>#zilch #iota #diddly-squat</returns>
-        public static string Zilch() => "#zilch #iota #diddly-squat";
+        /// <returns>#zilch #iota #diddly squat</returns>
+        public static string Zilch() => "#zilch #iota #diddly squat";
 
         /// <summary>
         /// Checks whether a value equals Zilch()
@@ -138,11 +140,16 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         public static string GetLogFileExtension() => ".log";
 
         /// <summary>
-        /// Returns the host app name using reflection. Returns "app" in case of a null value.
+        /// Returns the app name passed to InitialiseErrorHandling.
+        /// In case null or empty was passed the logger will try up to four fall back 
+		/// methods to determine the host app name. Each attempt will be validated
+		/// and skipped if the result is `null`, `empty string` contains `dotnet`, 
+		/// `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`.
+        /// The fourth and final fallback is to return the hard coded expression `app`.
         /// </summary>
         /// <returns>host app name</returns>
-        public static string GetAppName()
-            => Assembly.GetExecutingAssembly().GetName().Name ?? "app";
+		[MethodImpl(MethodImplOptions.NoInlining)]
+        public static string GetAppName() => _appName;
 
         /// <summary>
         /// Returns host app path using System.AppContext.
@@ -251,9 +258,9 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// Note: logger contains no logic for magically auto-hiding sensitive information.
         /// As host app dev you remain responsible to prevent sensitive data from entering logs.
         /// </summary>
-        /// <param name="methodName">methodname obtained through reflection</param>
-        /// <param name="errMsg">exception message from catch block</param>
-        /// <param name="stackTrace">exception stack trace from catch block</param>
+        /// <param name="methodName">using reflection: `MethodBase.GetCurrentMethod().Name`</param>
+        /// <param name="errMsg">exception message from catch block, `ex.Message`</param>
+        /// <param name="stackTrace">stack trace from catch block, `ex.StackTrace`stack trace from catch block, `ex.StackTrace`</param>
         public static void HandleException(string methodName, string errMsg, string stackTrace)
         {
             ShowExceptionOnConsole(methodName, errMsg);
@@ -270,8 +277,8 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// Note: logger contains no logic for magically auto-hiding sensitive information.
         /// As host app dev you remain responsible to prevent sensitive data from entering logs.
         /// </summary>
-        /// <param name="methodName">methodname obtained through reflection</param>
-        /// <param name="errMsg">exception message from catch block</param>
+        /// <param name="methodName">using reflection: `MethodBase.GetCurrentMethod().Name`</param>
+        /// <param name="errMsg">exception message from catch block, `ex.Message`</param>
         public static void HandleExceptionWithoutStackTrace(string methodName, string errMsg)
             => HandleException(methodName, errMsg, RedactedExpression());
 
@@ -285,9 +292,18 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// using > or >> is possible on both Windows and Linux as a work around.
         /// Retention of logfiles can be achieved either by shell scripts, batch files
         /// or by the host application making a copy.
+        /// In case the host appname passed to InitiliaseErrorHandling in null or empty 
+		/// the logger will try up to four fall back 
+		/// methods to determine the host app name. Each attempt will be validated
+		/// and skipped if the result is `null`, `empty string` contains `dotnet`, 
+		/// `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`.
+        /// The fourth and final fallback is to return the hard coded expression `app`.			
         /// </summary>
-        public static void InitialiseErrorHandling()
+        /// <param name="appName">appName passed explicitly from the host app 
+		/// using reflection or as string.</param>		
+        public static void InitialiseErrorHandling(string appName)
         {
+            ProcessAppName(appName);
             Console.WriteLine("Start: " + GetAppName());
             CheckOptions();
 
@@ -311,6 +327,68 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
                 LogAudit("Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] " +
                     "can not be disabled.");
                 LogAudit("Log initialisation complete.");
+            }
+        }
+
+        /// <summary>
+        /// **Public for unit test only.** Called by InitialiseErrorHandling. 
+        ///	Check whether the appname, passed 
+        /// from host app or generated by logger is appropriate.
+        /// Inappropriate app names are `null`, empty string or containing `dotnet`, 
+        /// `xunit`, `zerofrictionlogger`, `zilch` or `.`
+        /// </summary>
+        /// <param name="appName">host app name passed to `InitialiseErrorHandling`</param>
+        /// <returns>boolean</returns>
+        public static bool IsAppNameOK(string appName)
+        {
+            bool ok = true;
+            if (appName == null) appName = "";
+            if (appName?.Length == 0) ok = false;
+            if (appName.ToLower().Contains("dotnet")) ok = false;
+            if (appName.ToLower().Contains("xunit")) ok = false;
+            if (appName.ToLower().Contains("testhost")) ok = false;
+            if (appName.ToLower().Contains("zerofrictionlogger")) ok = false;
+            if (appName.ToLower().Contains("zilch")) ok = false;
+            if (appName.ToLower().Contains(".")) ok = false;
+            return ok;
+        }
+
+        /// <summary>
+        /// Public for unit test only.
+        /// </summary>
+        /// <returns></returns>
+        public static string FallBackExecutingAssembly()
+            => Assembly.GetExecutingAssembly().GetName().Name;
+
+        /// <summary>
+        /// Public for unit test only.
+        /// </summary>
+        /// <returns></returns>
+        public static string FallBackCallingAssembly()
+            => Assembly.GetCallingAssembly().GetName().Name;
+
+        /// <summary>
+        /// Public for unit test only.
+        /// </summary>
+        /// <returns></returns>
+        public static string FallBackEnvCmdLineArgsZero()
+            => Path.GetFileNameWithoutExtension(Environment.GetCommandLineArgs()[0]);
+
+        private static string FallBackAppHardCoded() => "app";
+
+        private static void ProcessAppName(string appName)
+        {
+            if (IsAppNameOK(appName))
+            {
+                _appName = appName;
+            }
+            else
+            {
+                string fallBack = FallBackExecutingAssembly();
+                if (!IsAppNameOK(fallBack)) fallBack = FallBackCallingAssembly();
+                if (!IsAppNameOK(fallBack)) fallBack = FallBackEnvCmdLineArgsZero();
+                if (!IsAppNameOK(fallBack)) fallBack = FallBackAppHardCoded();
+                _appName = fallBack;
             }
         }
 
