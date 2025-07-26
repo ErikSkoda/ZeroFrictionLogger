@@ -34,11 +34,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - unit test project including logger source code released on GitHub
 
 ## [0.9.3] - 2025-07-24
-:test tube: **Pre-release defect discovered**
+🧪 **Pre-release defect discovered**
 - Unit testing exposed a defect directly **before going live**: all unit tests passed when running from source but some broke when running against the locally installed NuGet package.
 - The `GetAppName()` method returned the **logger's own DLL name** instead of the **host app name**.
 
-:hammer and wrench: **Fix and design decision**
+🛠️ **Fix and design decision**
 - `InitialiseErrorHandling` has been updated to accept the host app name.
 - Host app devs can pass the app name explicitly using reflection or a string.
 - If empty or null, the logger uses **four fallback mechanisms** to resolve the host app name:
