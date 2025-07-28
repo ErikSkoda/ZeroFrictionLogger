@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `GetAppName()` method returned the **logger's own DLL name** instead of the **host app name**.
 
 🛠️ **Fix and design decision**
-- `InitialiseErrorHandling` has been updated to accept the host app name.
+- `InitialiseErrorHandling` has been updated to receive the host app name.
 - Host app devs can pass the app name explicitly using reflection or a string.
 - If empty or null, the logger uses **four fallback mechanisms** to resolve the host app name:
 1. `Assembly.GetExecutingAssembly()`
