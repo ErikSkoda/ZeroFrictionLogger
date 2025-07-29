@@ -121,8 +121,8 @@ You may want to customize logger behaviour. Here is how:
 
 *`InitialiseErrorHandling()` checks marker file presence in the host app bin folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
 
-### NuGet package coming soon
-Nuget package targetting .NET Core 6.0 and 8.0 is coming soon.
+### NuGet package
+Nuget package targetting `.netstandard2.1` is available on NuGet.
 To use the logger in older environments, build from source (see below)
 
 ### TestZeroFriction Source and Unit Test (Living Documentation)
