@@ -1270,4 +1270,17 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         // assert
         Assert.Equal(expected, actual);
     }
+
+    [Fact]
+    public static void LoggerVersion_Returns_096()
+    {
+        // arrange
+        string expected = "0.9.6";
+
+        // act
+        string actual = Err.LoggerVersion();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
 }
