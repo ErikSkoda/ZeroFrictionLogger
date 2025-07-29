@@ -1272,10 +1272,10 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void LoggerVersion_Returns_096()
+    public static void LoggerVersion_Returns_100()
     {
         // arrange
-        string expected = "0.9.6";
+        string expected = "1.0.0";
 
         // act
         string actual = Err.LoggerVersion();
