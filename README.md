@@ -6,6 +6,7 @@ Features thread-safe logging, fallback to console and speedblink testing. **logg
 150-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
 See screenshots of passing unit tests and latest documentation updates on [GitHub README](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/README.md).
+See the **Quick Start** section below for instant integration.
 
 ## Why
 
