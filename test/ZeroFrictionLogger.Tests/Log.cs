@@ -26,10 +26,10 @@ using System.IO; //required to make Path.DirectorySeparatorChar #compliant with 
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-//using System.Reflection.Metadata.Ecma335; //required to make AppContext.BaseDirectory
-//                                          //#compliant with #legacy .NET Core 2.1
+using System.Linq;
 
 //namespace ZeroFrictionLogger; // Not #compliant with #legacy .Net Core 2.1 (Out of Service)
+
 namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Core 8.0 LTS
 {
     public static class Log
@@ -292,12 +292,10 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// using > or >> is possible on both Windows and Linux as a work around.
         /// Retention of logfiles can be achieved either by shell scripts, batch files
         /// or by the host application making a copy.
-        /// In case the host appname passed to InitiliaseErrorHandling in null or empty 
-		/// the logger will try up to four fall back 
-		/// methods to determine the host app name. Each attempt will be validated
-		/// and skipped if the result is `null`, `empty string` contains `dotnet`, 
-		/// `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`.
-        /// The fourth and final fallback is to return the hard coded expression `app`.			
+        /// In case the host appname passed to InitiliaseErrorHandling is `null`, an empty string
+		/// or contains any of the expressions `dotnet`, `xunit`, `testhost`, 
+		/// `zerofrictionlogger`, `zilch` or `.` (not case sensitive) the logger will fall back 
+		/// to the hard coded expression `app`.			
         /// </summary>
         /// <param name="appName">appName passed explicitly from the host app 
 		/// using reflection or as string.</param>		
@@ -341,56 +339,17 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// <returns>boolean</returns>
         public static bool IsAppNameOK(string appName)
         {
-            bool ok = true;
-            if (appName == null) appName = "";
-            if (appName?.Length == 0) ok = false;
-            if (appName.ToLower().Contains("dotnet")) ok = false;
-            if (appName.ToLower().Contains("xunit")) ok = false;
-            if (appName.ToLower().Contains("testhost")) ok = false;
-            if (appName.ToLower().Contains("zerofrictionlogger")) ok = false;
-            if (appName.ToLower().Contains("zilch")) ok = false;
-            if (appName.ToLower().Contains(".")) ok = false;
-            return ok;
+            if (String.IsNullOrEmpty(appName)) return false;
+            string appNameLowerCase = appName.ToLower();
+            string[] invalid = { "dotnet", "xunit", "testhost", "zerofrictionlogger", "zilch" };
+            return !invalid.Any(appNameLowerCase.Contains) && !appName.Contains(".");
         }
 
-        /// <summary>
-        /// Public for unit test only.
-        /// </summary>
-        /// <returns></returns>
-        public static string FallBackExecutingAssembly()
-            => Assembly.GetExecutingAssembly().GetName().Name;
-
-        /// <summary>
-        /// Public for unit test only.
-        /// </summary>
-        /// <returns></returns>
-        public static string FallBackCallingAssembly()
-            => Assembly.GetCallingAssembly().GetName().Name;
-
-        /// <summary>
-        /// Public for unit test only.
-        /// </summary>
-        /// <returns></returns>
-        public static string FallBackEnvCmdLineArgsZero()
-            => Path.GetFileNameWithoutExtension(Environment.GetCommandLineArgs()[0]);
-
-        private static string FallBackAppHardCoded() => "app";
+        private static string GetAppNameFromHostAppOrOtherwise(string appName)
+            => IsAppNameOK(appName) ? appName : "app";
 
         private static void ProcessAppName(string appName)
-        {
-            if (IsAppNameOK(appName))
-            {
-                _appName = appName;
-            }
-            else
-            {
-                string fallBack = FallBackExecutingAssembly();
-                if (!IsAppNameOK(fallBack)) fallBack = FallBackCallingAssembly();
-                if (!IsAppNameOK(fallBack)) fallBack = FallBackEnvCmdLineArgsZero();
-                if (!IsAppNameOK(fallBack)) fallBack = FallBackAppHardCoded();
-                _appName = fallBack;
-            }
-        }
+            => _appName = GetAppNameFromHostAppOrOtherwise(appName);
 
         private static void CheckOptions()
         {
