@@ -3,7 +3,7 @@ Zero config, zero dependency exception handler and logger, logs designed for bot
 
 Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLLs** (*to be released*) will target 6.0 and 8.0 LTS; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub.
 
-170-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
+150-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
 **Note:** NuGet and GitHub pre-release documentation roll out.
 
@@ -333,7 +333,7 @@ Returns log file extension for use by host application for handling log file ret
 ---
 
 ### GetAppName  
-Returns the app name passed to InitialiseErrorHandling. In case null or empty was passed the logger will try up to four fall back  methods to determine the host app name. Each attempt will be validated and skipped if the result is `null`, `empty string` contains `dotnet`, `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`. The fourth and final fallback is to return the hard coded expression `app`.
+Returns the app name passed to InitialiseErrorHandling. If the passed app name is: `null`, `empty string` contains `dotnet`, `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
 
 **Returns:** host app name
 
@@ -499,38 +499,15 @@ is possible on both Windows and Linux as a workaround.
 Retention of logfiles can be achieved by shell scripts, batch files, or by  
 the host application making a copy.
 
-In case the host appname passed to InitiliaseErrorHandling in null or empty 
-the logger will try up to four fall back 
-methods to determine the host app name. Each attempt will be validated
-and skipped if the result is `null`, `empty string` contains `dotnet`, 
-`xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`.
-The fourth and final fallback is to return the hard coded expression `app`.			
+In case the host appname passed to InitiliaseErrorHandling is `null`, an empty string
+or contains any of the expressions `dotnet`, `xunit`, `testhost`, 
+`zerofrictionlogger`, `zilch` or `.` (not case sensitive) the logger will fall back 
+to the hard coded expression `"app"`.		
 
 **parameters**
 - `appName` appName passed explicitly from the host app using reflection or as string.
 
 ---
-
-### FallBackExecutingAssembly
-Public for unit test only.
-
-**Returns:** fall back for host app name
-
----
-
-### FallBackCallingAssembly
-Public for unit test only.
-
-**Returns:** fall back for host app name
-
----
-
-### FallBackEnvCmdLineArgsZero
-Public for unit test only.
-
----
-
-**Returns:** fall back for host app name
 
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
