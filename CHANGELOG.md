@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [0.1.0] - 2025-07-11
 - upload of initial README.md
@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The `GetAppName()` method returned the **logger's own DLL name** instead of the **host app name**.
 
 🛠️ **Fix and design decision**
-- `InitialiseErrorHandling` has been updated to receive the host app name.
+- `InitialiseErrorHandling` has been updated to accept the host app name.
 - Host app devs can pass the app name explicitly using reflection or a string.
 - If empty or null, the logger uses **four fallback mechanisms** to resolve the host app name:
 1. `Assembly.GetExecutingAssembly()`
@@ -63,6 +63,31 @@ This approach combines **maximum developer control** with **sensible defaults**,
 - Version 0.9.3 **will not be published on NuGet** as a packaged dll.
 - Version 0.9.3 **full source code is shared on GitHub** for the sake of transparency
 - *A solution favoring simple over clever is in the works.*
+
+:arrows_counterclockwise: **Updates**
+- `Log.cs`
+- `TestCases.cs`
+- `README.md`
+- `CHANGELOG.md`
+
+## [0.9.4] - 2025-07-26
+🧪 **Fall back methods not working as intended**
+The 0.9.3 fix worked to an extent: the reflection-based fall back methods for retrieving host app name introduced worked fine when running from source, but not when using the packaged dll. Only the fourth and final fall back - using the hard coded `"app"` worked reliably.
+
+🛠️ **Update and design decision**
+Host app devs can still pass the host app name to `InitialiseErrorHandling`, either via reflection or as string. If the host app name passed is `null`, empty or contains `dotnet`, `xunit`, `testhost`, `zerofrictionlogger`, `zilch` or a `.` (period), the logger falls back to a single hardcoded value: `"app"`.
+
+:pushpin: **Summary**
+- *As host app dev you can pass the host app name to `InitialiseErrorHandling`, If not  the logger defaults to `"app"`.* This implementation values simple over clever while maximizing portability across `exe` and `dll` contexts, regardless of OS or platform - including Windows, Linux, MacOS, Mono/Xamarin, Native AOT, Blazor, Unity, etc. The library targets `.NETStandard2.1`.
+
+:arrows_counterclockwise: **Updates**
+- `Log.cs`
+- `TestCases.cs`
+- `README.md`
+- `CHANGELOG.md`
+
+## [0.9.5] - 2024-07-29
+- As host app dev you can pass the host app name to `InitialiseErrorHandling`. If the passed app name is: `null`, `empty string` or contains `dotnet`, `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
 
 :arrows_counterclockwise: **Updates**
 - `Log.cs`
