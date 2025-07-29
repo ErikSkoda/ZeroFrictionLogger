@@ -46,7 +46,7 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// unit tests are indeed using the expected version of the DLL.
         /// </summary>
         /// <returns></returns>
-        public static string LoggerVersion() => "0.9.6";
+        public static string LoggerVersion() => "1.0.0";
 
         /// <summary>
         /// Visual markers, grepable sentinel tags to catch an
