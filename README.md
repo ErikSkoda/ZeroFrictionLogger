@@ -5,7 +5,7 @@ Features thread-safe logging, fallback to console and speedblink testing. **logg
 
 150-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
-**Note:** Pre-release documentation and DLL verified accross platforms. Preparing for stable 1.0.0 release.
+See screenshots of passing unit tests and latest documentation updates on [GitHub README](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/README.md).
 
 ## Why
 
@@ -223,7 +223,11 @@ There are **many** great and feature rich loggers out there, some including adva
 ```
 
 ## Unit tests
-Check out the xunit unit test project for verification and living documentation through practical examples.
+Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests) for verification and living documentation through practical examples.
+
+![Unit Tests Passing on Windows (1 of 2)](docs/images/pass_on_windows_1of2.PNG)
+![Unit Tests Passing on Windows (2 of 2)](docs/images/pass_on_windows_2of2.PNG)
+![Unit Tests Passing on Linux](docs/images/pass_on_linux.PNG)
 
 ## Full documentation  
 Public method documentation of `log.cs`.
