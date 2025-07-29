@@ -1,11 +1,11 @@
 ## ZeroFrictionLogger
 Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
 
-Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLLs** (*to be released*) will target 6.0 and 8.0 LTS; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub.
+Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLLs** will target `netstandard2.1`; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub.
 
 150-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
-**Note:** NuGet and GitHub pre-release documentation roll out.
+**Note:** Pre-release documentation and DLL verified accross platforms. Preparing for stable 1.0.0 release.
 
 ## Why
 
@@ -228,6 +228,13 @@ Check out the xunit unit test project for verification and living documentation 
 ## Full documentation  
 Public method documentation of `log.cs`.
 
+### LoggerVersion
+Marker to be checked in unit tests to **prove** unit tests are indeed using the **expected version** of the DLL.
+
+**Returns:** `build nr of logger to be published`
+
+---
+
 ### Zilch  
 Visual markers, grepable sentinel tags to catch an  
 uninitialized state and to prevent silent errors.
@@ -333,7 +340,7 @@ Returns log file extension for use by host application for handling log file ret
 ---
 
 ### GetAppName  
-Returns the app name passed to InitialiseErrorHandling. If the passed app name is: `null`, `empty string` contains `dotnet`, `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
+Returns the app name passed to InitialiseErrorHandling. If the passed app name is: `null`, `empty string` or contains `dotnet`, `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
 
 **Returns:** host app name
 
@@ -480,8 +487,8 @@ the stack trace message with grepable sentinel tags `#redacted #audit`.
 
 **Note:** Logger contains no logic for magically auto-hiding sensitive information.  
 As host app dev you remain responsible to prevent sensitive data from entering logs.
-
 **Parameters:**  
+then
 - `methodName` using reflection: `MethodBase.GetCurrentMethod().Name`
 - `errMsg` exception message from catch block, `ex.Message`
 
