@@ -86,7 +86,7 @@ Host app devs can still pass the host app name to `InitialiseErrorHandling`, eit
 - `README.md`
 - `CHANGELOG.md`
 
-## [0.9.5] - 2024-07-29
+## [0.9.5] - 2025-07-29
 - As host app dev you can pass the host app name to `InitialiseErrorHandling`. If the passed app name is: `null`, `empty string` or contains `dotnet`, `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
 
 :arrows_counterclockwise: **Updates**
@@ -95,7 +95,7 @@ Host app devs can still pass the host app name to `InitialiseErrorHandling`, eit
 - `README.md`
 - `CHANGELOG.md`
 
-## [0.9.6] - 2024-07-29
+## [0.9.6] - 20254-07-29
 - Added method `LoggerVersion()`. Marker to be checked in unit tests to **prove** unit tests are indeed using the **expected version** of the DLL.
 
 :arrows_counterclockwise: **Updates**
