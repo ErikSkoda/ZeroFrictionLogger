@@ -140,12 +140,9 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         public static string GetLogFileExtension() => ".log";
 
         /// <summary>
-        /// Returns the app name passed to InitialiseErrorHandling.
-        /// In case null or empty was passed the logger will try up to four fall back 
-		/// methods to determine the host app name. Each attempt will be validated
-		/// and skipped if the result is `null`, `empty string` contains `dotnet`, 
-		/// `xunit`, `testhost`,  `zerofrictionlogger`, `zilch` or `.`.
-        /// The fourth and final fallback is to return the hard coded expression `app`.
+        /// Returns the app name passed to InitialiseErrorHandling. If the passed app name
+        /// is: `null`, `empty string` or contains `dotnet`, `xunit`, `testhost`,
+        /// `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
         /// </summary>
         /// <returns>host app name</returns>
 		[MethodImpl(MethodImplOptions.NoInlining)]
@@ -295,10 +292,10 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// In case the host appname passed to InitiliaseErrorHandling is `null`, an empty string
 		/// or contains any of the expressions `dotnet`, `xunit`, `testhost`, 
 		/// `zerofrictionlogger`, `zilch` or `.` (not case sensitive) the logger will fall back 
-		/// to the hard coded expression `app`.			
+		/// to the hard coded expression `app`.	
         /// </summary>
         /// <param name="appName">appName passed explicitly from the host app 
-		/// using reflection or as string.</param>		
+		/// using reflection or as string.</param>
         public static void InitialiseErrorHandling(string appName)
         {
             ProcessAppName(appName);
