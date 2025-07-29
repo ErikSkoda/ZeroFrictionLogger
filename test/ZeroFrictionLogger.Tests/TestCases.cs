@@ -260,7 +260,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void GetAppName_EqualsTestLogger_True()
+    public static void GetAppName_AssemblyGetExecutingAssembly_EqualsTestLogger()
     {
         // arrange
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
@@ -344,25 +344,109 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void GetAppName_InitialisedWithNull_EqualsTestLogger()
+    public static void GetAppName_InitialisedWithNull_EqualsApp()
     {
         // arrange
         Err.InitialiseErrorHandling(null);
-        const string unexpected = "TestLogger";
+        const string expected = "app";
 
         // act
         string actual = Err.GetAppName();
 
         // assert
-        Assert.Equal(unexpected, actual);
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
-    public static void GetAppName_InitialisedWithEmptyString_EqualsTestLogger()
+    public static void GetAppName_InitialisedWithEmptyString_EqualsApp()
     {
         // arrange
         Err.InitialiseErrorHandling("");
-        const string expected = "TestLogger";
+        const string expected = "app";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithTestHost_EqualsApp()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("TestHost");
+        const string expected = "app";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithLowerCaseDotNet_EqualsApp()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("dotnet");
+        const string expected = "app";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithZeroFrictionLogger_EqualsApp()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("ZeroFrictionLogger");
+        const string expected = "app";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithXunit_EqualsApp()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("xunit");
+        const string expected = "app";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithZilch_EqualsApp()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("zilch");
+        const string expected = "app";
+
+        // act
+        string actual = Err.GetAppName();
+
+        // assert
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetAppName_InitialisedWithSomeHostAppNameDotExe_EqualsApp()
+    {
+        // arrange
+        Err.InitialiseErrorHandling("somehostappname.exe");
+        const string expected = "app";
 
         // act
         string actual = Err.GetAppName();
@@ -464,7 +548,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         Assert.False(actual);
     }
 
-    //[Fact]
+    [Fact]
     public static void GetAppName_InitialisedWithNull_IsNotEmpty()
     {
         // arrange
@@ -517,45 +601,6 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
 
         // assert
         Assert.EndsWith(expected, actual);
-    }
-
-    [Fact]
-    public static void FallBackExecutingAssembly_EqualsTestLogger()
-    {
-        // arrange
-        string expected = "TestLogger";
-
-        // act
-        string appName = Err.FallBackExecutingAssembly();
-
-        // assert
-        Assert.Equal(expected, appName);
-    }
-
-    [Fact]
-    public static void FallBackCallingAssembly_EqualsTestLogger()
-    {
-        // arrange
-        string expected = "TestLogger";
-
-        // act
-        string appName = Err.FallBackCallingAssembly();
-
-        // assert
-        Assert.Equal(expected, appName);
-    }
-
-    [Fact]
-    public static void FallBackEnvCmdLineArgsZero_EqualsTestLogger_Fail()
-    {
-        // arrange
-        string expected = "TestLogger";
-
-        // act
-        string appName = Err.FallBackEnvCmdLineArgsZero();
-
-        // assert
-        Assert.Equal(expected, appName); // Fail. Unit test from source returns: `testhost` :-/
     }
 
     [Fact]
