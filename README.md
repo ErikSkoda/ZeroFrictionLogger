@@ -230,7 +230,7 @@ Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictio
 ![Unit Tests Passing on Linux](docs/images/pass_on_linux.PNG)
 
 ## Full documentation  
-Public method documentation of [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs).
+Public method documentation of [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs).
 
 ### LoggerVersion
 Marker to be checked in unit tests to **prove** unit tests are indeed using the **expected version** of the DLL.
