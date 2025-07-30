@@ -128,8 +128,8 @@ To use the logger in older environments, build from source (see below)
 Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** from GitHub, containing:
 
 **Logger core:**
-- `[Log.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)`
-- `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)`
+- [`Log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)
+- [`PascalToSentence.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)
 
 **Test Suite:**
 - `TestCases.cs` (80-ish xUnit unit tests)
@@ -163,7 +163,7 @@ All unit tests were confirmed passing before sharing the test project on GitHub.
 :warning: .NET Core 2.1 is out of support.
 
 ### Build from Source
-1. Download `[log.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)` and `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)` from GitHub.
+1. Download [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)` and `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs) from GitHub.
 2. In Solution Explorer:
 - Right-click on your Project
 - Select **Add -> Existing item...**
@@ -230,7 +230,7 @@ Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictio
 ![Unit Tests Passing on Linux](docs/images/pass_on_linux.PNG)
 
 ## Full documentation  
-Public method documentation of `[log.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)`.
+Public method documentation of [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs).
 
 ### LoggerVersion
 Marker to be checked in unit tests to **prove** unit tests are indeed using the **expected version** of the DLL.
