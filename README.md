@@ -1,7 +1,7 @@
 ## ZeroFrictionLogger
 Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
 
-Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLLs** will target `netstandard2.1`; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub. See the Quick Start section for... a quick start :)
+Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLLs** will target `netstandard2.1`; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub. See the **Quick Start** section for... a quick start :)
 
 150-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
 
@@ -128,8 +128,8 @@ To use the logger in older environments, build from source (see below)
 Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** from GitHub, containing:
 
 **Logger core:**
-- `Log.cs`
-- `PascalToSentence.cs`
+- `[Log.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)`
+- `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)`
 
 **Test Suite:**
 - `TestCases.cs` (80-ish xUnit unit tests)
@@ -163,7 +163,7 @@ All unit tests were confirmed passing before sharing the test project on GitHub.
 :warning: .NET Core 2.1 is out of support.
 
 ### Build from Source
-1. Download `log.cs` and `PascalToSentence.cs` from GitHub.
+1. Download `[log.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)` and `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)` from GitHub.
 2. In Solution Explorer:
 - Right-click on your Project
 - Select **Add -> Existing item...**
@@ -230,7 +230,7 @@ Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictio
 ![Unit Tests Passing on Linux](docs/images/pass_on_linux.PNG)
 
 ## Full documentation  
-Public method documentation of `log.cs`.
+Public method documentation of `[log.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)`.
 
 ### LoggerVersion
 Marker to be checked in unit tests to **prove** unit tests are indeed using the **expected version** of the DLL.
