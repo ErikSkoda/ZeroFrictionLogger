@@ -21,6 +21,11 @@ A while ago the test tool I was using started crashing at 22:00. The tooling fai
 ### Simplicity as security feature
 Built the original version of the logger way before november 2021. Simplicity means no surprise behaviour through runtime injection.
 
+### App logging only - no OS-level monitoring
+The logger records **only** application events - **not** system logs, third party logs or framework-level logs.
+
+Still, this does not mean you have to be blind to environmental issues. Years ago, I asked the infra team next door—already running an enterprise-grade monitoring suite—for disk and memory checks on a tool server. They said it required budget approval, which never came. Later on I built my own checks, logged the results, and included them in the reports.
+
 ## Grepable markers
 The exception methods (and logAudit) add visual markers, grepable sentinel tags (#exception, #audit) to the log. This allows to extract and share for instance audit reports without/before building them in the host app. Used the approach in a test tool with #summary, #details, #metrics, #S2R (steps to reproduce) enabling provision of reports before having built them. This allowed for initial focus on 1. tool stability and 2. testware validation - a huge time saver. The approach allowed building fancy HTML reports with pie charts and styling later, with the reduced pressure of "nice to have" rather than high-pressure "must have" features, allowing for some much-needed breathing space.
 
@@ -102,6 +107,16 @@ catch (Exception ex)
 {
     Err.HandleExceptionWithoutStackTrace(MethodBase.GetCurrentMethod().Name, ex.Message);
 }
+```
+
+### Logging
+```csharp
+Err.LogDebug("Penicilline discovered by accident");
+Err.LogInfo("Rain in Ireland identified as liquid sunshine");
+Err.LogWarning("Animal print pants outta control");
+Err.LogAudit("Calling external process xyz");
+Err.LogError("Pizza with pineapple detected");
+Err.LogFatal("It was at that moment Nathan knew...");
 ```
 
 ### Opt out of default behaviour, full list
