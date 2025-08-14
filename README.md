@@ -1,3 +1,4 @@
+
 ## ZeroFrictionLogger
 Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
 
@@ -137,6 +138,37 @@ You may want to customize logger behaviour. Here is how:
 | using UTC time   | `no-utc.txt`        | Checked once by `InitialiseErrorHandling()`, alternative is local time |
 
 *`InitialiseErrorHandling()` checks marker file presence in the host app bin folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
+
+### Creating a report from grepable markers - Out of scope but not out of heart
+While **out of scope** for the logger, extracting an audit (or any) report from logfile based on a grepable marker (here `#audit`) can be a real time saver - allowing you to create reports before they are built.
+
+The one-liner below works from Windows CMD. Tested, works.
+
+`findstr /C:#audit app.log > audit.txt`
+
+### Log file retention - Out of scope but not out of heart
+While retention is **out of scope** for the logger itself for the sake of simplicity, you can still archive logs with a timestamp in a straighforward way. Below you find a Windows CMD batch example adding a YYYY-MM-DD_HH_MM_SSmm prefix to `app.log`.
+
+It does pad hours before 10:00 to prevent filename issues. Does not require PowerShell.
+
+Tested it, `app.log` was copied to `2025-08-14_09_09_1228-app.log` **OK**.
+
+``` CMD batch file
+set dd=%DATE:~7,2%
+set mm=%DATE:~4,2%
+set yyyy=%DATE:~-4%
+set hh=%time:~0,2%
+set hh=%hh: =0%
+set min=%time:~3,2%
+set ss=%time:~6,2%
+set ms=%time:~9,2%
+
+set timestamp=%yyyy%-%mm%-%dd%_%hh%_%min%_%ss%%ms%
+
+REM echo timestamp = %timestamp%
+
+copy app.log %timestamp%-app.log
+```
 
 ### NuGet package
 Nuget package targetting `.netstandard2.1` is available on NuGet.
