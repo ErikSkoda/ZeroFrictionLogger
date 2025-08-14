@@ -1,4 +1,3 @@
-
 ## ZeroFrictionLogger
 Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
 
@@ -192,7 +191,7 @@ Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** fr
 
 **Note:** The test project uses [xUnit](https://xunit.net/?tabs=cs) for testing. Make sure you have it installed to build and run the tests. The test project uses .NET 8.0 and the latest xUnit packages. While the logger core supports .NET 6.0 (and earlier), the *test project* will **not** build on .NET 6.0.
 
-Tried and failed to downgrade to earlier versions of `xunit`, `xunit.runner.visualstudio` and `Microsoft.NET.Test.Sdk` to support both .NET Core 8.0 and 6.0. Currently, the xUnit test project - using the latest components - only builds and runs on **.NET Core 8.0**. May resurrect a minimalistic, archaic unit test tool from the digital scrap heap to support unit testing the logger on older .NET Core versions still in corporate use.
+Currently, the xUnit test project - using the latest components - builds and runs on **.NET Core 8.0**.
 
 :white_check_mark: **Unit tests pass on both Windows and Linux (Ubuntu LTS)**
 All unit tests were confirmed passing before sharing the test project on GitHub.
@@ -573,5 +572,3 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
-
-
