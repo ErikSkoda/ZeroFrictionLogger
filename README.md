@@ -145,8 +145,12 @@ The one-liner below works from Windows CMD. Tested, works.
 
 `findstr /C:#audit app.log > audit.txt`
 
+Copied this one-liner from my Linux VM. It works.
+
+`grep "#audit" Test.log > audit.txt`
+
 ### Log file retention - Out of scope but not out of heart
-While retention is **out of scope** for the logger itself for the sake of simplicity, you can still archive logs with a timestamp in a straighforward way. Below you find a Windows CMD batch example adding a YYYY-MM-DD_HH_MM_SSmm prefix to `app.log`.
+My TAF host app handles log file retention programmatically, making a copy to report folder where it can also be accessed from the HTML report. While retention is **out of scope** for the logger itself for the sake of simplicity, you can still archive logs with a timestamp in a straighforward way. Below you find a Windows CMD batchfile example adding a YYYY-MM-DD_HH_MM_SSmm prefix to `app.log`.
 
 It does pad hours before 10:00 to prevent filename issues. Does not require PowerShell.
 
@@ -568,7 +572,6 @@ to the hard coded expression `"app"`.
 - `appName` appName passed explicitly from the host app using reflection or as string.
 
 ---
-
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
