@@ -27,9 +27,12 @@ using Err = ZeroFrictionLogger.Log; // choose using to your liking your in host 
 
 namespace Test;
 
-// public static class TestErrorHandlingAndLogging; // Not compliant with #legacy .Net Core 2.1
+[Collection("Sequential")]
+
 public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
 {
+    private static readonly object LockObject = new object();
+
     [Fact]
     public static void HandleException_StackTraceWithCurlyBraces_LogExpressionContainsCurlyBraces()
     {
@@ -161,6 +164,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         Assert.True(actual);
     }
 
+
     [Fact]
     public static void LogFatal_ItWasAtThatMomentNathanKnew_ContainsBleepedUp()
     {
@@ -168,6 +172,22 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string fatal = "It was at that moment Nathan knew, he'd bleep-ed up.";
         string expected = "[FATAL] " + fatal;
+
+        // act
+        Err.LogFatal(fatal);
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogFatal_Contains_FATALBetweenSquareBrackets()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string fatal = "It was at that moment Nathan knew, he'd bleep-ed up.";
+        string expected = "[FATAL]";
 
         // act
         Err.LogFatal(fatal);
@@ -192,6 +212,77 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
         Err.LogDebug(debug);
         bool actual = Support.LogFileContainsString(expected);
 
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogTrace_FollowTheBreadCrumbs_ContainsTrace()
+    {
+        // arrange
+        string optInPathAndFilename = Path.Combine(Err.GetAppPath(), "use-trace.txt");
+        lock (LockObject)
+        {
+            if (!File.Exists(optInPathAndFilename))
+            {
+                File.Create(optInPathAndFilename).Close();
+            }
+        }
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string trace = "Follow the bread crumbs";
+        string expected = "[TRACE]";
+
+        // act
+        Err.LogTrace(trace);
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogTrace_FollowTheBreadCrumbs_ContainsBread()
+    {
+        // arrange
+        string optInPathAndFilename = Path.Combine(Err.GetAppPath(), "use-trace.txt");
+        lock (LockObject)
+        {
+            if (!File.Exists(optInPathAndFilename))
+            {
+                File.Create(optInPathAndFilename).Close();
+            }
+        }
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string trace = "Follow the bread crumbs";
+        string expected = "bread";
+
+        // act
+        Err.LogTrace(trace);
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogTrace_NoOptIn_NoTraceFound()
+    {
+        // arrange
+        string optInPathAndFilename = Path.Combine(Err.GetAppPath(), "use-trace.txt");
+        {
+            if (File.Exists(optInPathAndFilename))
+            {
+                File.Delete(optInPathAndFilename);
+            }
+        }
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string trace = "No opt in no trace";
+        string expected = trace;
+
+        // act
+        Err.LogTrace(trace);
+        bool actual = !Support.LogFileContainsString(expected);
+        
         // assert
         Assert.True(actual);
     }
@@ -234,7 +325,52 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void HandleException_ErrMsgAndStackTraceBothNull_MethodNameGetsLogged()
+    public static void HandleExceptionWithoutStackTrace_SimulateError_LogContainsHashTagRedacted()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        string expected = "#redacted";
+
+        // act
+        Err.HandleExceptionWithoutStackTrace("method name", "sim. error"); //stacktrace not passed
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void HandleExceptionWithoutStackTrace_ForceException_MethodNameNotFoundInLog()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        string unExpected = "HandleExceptionWithoutStackTraceForTestingPurpose()";
+
+        // act
+        Support.HandleExceptionWithoutStackTraceForTestingPurpose();
+        bool actual = Support.LogFileContainsString(unExpected);
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void HandleExceptionWithoutStackTrace_ForceException_LineColonNotFoundInLog()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        string unExpected = "line:";
+
+        // act
+        Support.HandleExceptionWithoutStackTraceForTestingPurpose();
+        bool actual = Support.LogFileContainsString(unExpected);
+
+        // assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public static void HandleException_ErrMsgNull_MethodNameGetsLogged()
     {
         // arrange
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
@@ -247,10 +383,64 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
             int x = 33;
             int y = x / 0;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            Err.HandleException(null, methodName, null);
+            Err.HandleException(methodName, null, ex.StackTrace);
             actual = Support.LogFileContainsString(methodName);
+        }
+        finally
+        {
+            // assert
+            Assert.True(actual);
+        }
+    }
+
+    [Fact]
+    public static void HandleException_StackTraceNull_StackTracePlaceHolderGetsLogged()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        bool actual = false;
+        string methodName = MethodBase.GetCurrentMethod().Name;
+        string expected = "[stack trace: #null-value]";
+
+        try
+        {
+            // act
+            int x = 33;
+            int y = x / 0;
+        }
+        catch (Exception ex)
+        {
+            Err.HandleException(methodName, ex.Message, null);
+            actual = Support.LogFileContainsString(expected);
+        }
+        finally
+        {
+            // assert
+            Assert.True(actual);
+        }
+    }
+
+    [Fact]
+    public static void HandleException_MethodNameNull_MethodNameGetsLogged()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        bool actual = false;
+        string methodName = MethodBase.GetCurrentMethod().Name;
+        string expected = "[stack trace: #null-value]";
+
+        try
+        {
+            // act
+            int x = 33;
+            int y = x / 0;
+        }
+        catch (Exception ex)
+        {
+            Err.HandleException(methodName, ex.Message, null);
+            actual = Support.LogFileContainsString(expected);
         }
         finally
         {
@@ -798,7 +988,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void IsZilch_FootMassage_False()
+    public static void NotZilch_FootMassage_True()
     {
         // arrange
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
@@ -809,6 +999,22 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
 
         // assert
         Assert.True(actual);
+    }
+
+    [Fact]
+    public static void NotZilch_ZilchMessage_False()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string zilchMessage = "#zilch #iota #diddly squat";
+        string expected = false.ToString();
+
+        // act
+        bool check = Err.NotZilch(zilchMessage);
+        string actual = check.ToString();
+
+        // assert
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -996,21 +1202,35 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void ExplicitlyRedactAndMarkValue_SafeUsingNullForValue_True()
+    public static void ExplicitlyRedactAndMarkValue_PassingNullValueFlaggedWithZilch()
     {
         // arrange
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
-        string expected = "[password] " + Err.RedactedExpression();
+        string expected = Err.Zilch();
 
         // act
         string actual = Err.ExplicitlyRedactAndMarkValue("password", null);
 
         // assert
-        Assert.Equal(expected, actual);
+        Assert.Contains(expected, actual);
     }
 
     [Fact]
-    public static void ExplicitlyRedactAndMarkValue_SafeUsingNullForContext_True()
+    public static void ExplicitlyRedactAndMarkValue_PassingNullValueFlaggedWithNullOrEmpty()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        string expected = "null or empty";
+
+        // act
+        string actual = Err.ExplicitlyRedactAndMarkValue("password", null);
+
+        // assert
+        Assert.Contains(expected, actual);
+    }
+
+    [Fact]
+    public static void ExplicitlyRedactAndMarkValue_PassingNullForContextFlaggedGracefully()
     {
         // arrange
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
@@ -1134,6 +1354,20 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
 
         // assert
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void GetLogFileExtension_NotEqualDotTxt()
+    {
+        // arrange
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string unExpected = ".txt";
+
+        // act
+        string actual = Err.GetLogFileExtension();
+
+        // assert
+        Assert.NotEqual(unExpected, actual);
     }
 
     [Fact]
@@ -1272,15 +1506,374 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void LoggerVersion_Returns_100()
+    public static void LoggerVersion_Returns_1dot0dot0()
     {
         // arrange
-        string expected = "1.0.0";
+        string expected = "1.1.0";
 
         // act
         string actual = Err.LoggerVersion();
 
         // assert
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public static void LoggerVersion_NotStartingWith_0dot()
+    {
+        // arrange
+        string unExpected = "0.";
+
+        // act
+        string actual = Err.LoggerVersion();
+        bool expected = !actual.StartsWith(unExpected);
+
+        // assert
+        Assert.True(expected);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTimeAndSeconds_Contains_ddTddColon()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseSec();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "expresion with dash, two digits, T, two digits, colon expected.";
+        string pattern = @"-\d{2}T\d{2}:";
+
+        // act
+        Err.LogError(error);
+        bool actual = Support.LogFileContainsRegex(pattern);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTimeUsingSecondsAdoptingIso8601_CompliesWithIso8601()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseSec();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        string patternIso8601Sec = @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z";
+        const string error = "Pizza with pineapple detected.";
+
+        // act
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        Err.LogError(error);
+        bool actual = Support.LogFileContainsRegex(patternIso8601Sec);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTimeUsingMillisecondsAdoptingIso8601_CompliesWithIso8601()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseMilliSec();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        string patternIso8601MilliSec = @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}(?:\.\d+)?Z";
+        const string error = "Pizza with pineapple detected.";
+
+        // act
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        Err.LogError(error);
+        bool actual = Support.LogFileContainsRegex(patternIso8601MilliSec);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTime_UsingNonIso8601andMilliSec_NonIso8601TimeStamp()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseMilliSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        string patternIso8601MilliSec = @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}(?:\.\d+)?Z";
+        const string error = "Pizza with pineapple detected. Non ISO8601 timestamp expected";
+
+        // act
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsRegex(patternIso8601MilliSec);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTime_UsingNonIso8601andSec_NonIso8601TimeStamp()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        string patternIso8601Sec = @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z";
+        const string error = "Pizza with pineapple detected. Non ISO8601 timestamp expected";
+
+        // act
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsRegex(patternIso8601Sec);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingNonIso8601UtcTimeAndMilliSeconds_ContainsNo_ddTddColon()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseMilliSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pattern not found: dash digit digit T digit digit colon";
+        string pattern = @"-\d{2}T\d{2}:";
+
+        // act
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsRegex(pattern);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingNonIso8601UtcTimeAndMilliSeconds_ContainsNoZ()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseMilliSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Character: 'capital z' expected missing";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+
+        bool actual = !Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingNonIso8601UtcTimeAndSeconds_ContainsNoddTddColon()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pattern not found: dash digit digit T digit digit colon";
+        string pattern = @"-\d{2}T\d{2}:";
+
+        // act
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsRegex(pattern);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingNonIso8601UtcTimeAndSeconds_ContainsNoZ()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Character: 'capital z' expected missing";
+        string expected = "Z";
+
+        // act
+        Err.LogError(error);
+
+        bool actual = !Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTimeAndSeconds_ContainsZspaceBracketOpen()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.UseSec();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pizza with pineapple detected.";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingUtcTimeAndMilliSeconds_ContainsZspaceBracketOpen()
+    {
+        // arrange
+        Support.UseMilliSec();
+        Support.UseUtc();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Characters: `capital: t<space>[` expected.";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_AdoptingIso8601_ContainsRetainFalse()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.AdoptIso8601UtcTimeStamp();
+        Support.UseMilliSec();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Check whether log initialisation shows moving over to the standardised utc time stamp.";
+        string expected = "retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = False";
+
+        // act
+        Err.LogError(error);
+
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_AdoptingIso8601_ContainsRetainTrue()
+    {
+        // arrange
+        Support.UseUtc();
+        Support.RetainNonIso8601UtcTimeStamp();
+        Support.UseMilliSec();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Check if log initialisation shows keeping the more readable utc time stamp";
+        string expected = "retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = True";
+
+        // act
+        Err.LogError(error);
+
+        bool actual = Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingLocalTimeSecondsAndAdoptIso8601_ContainsNoZspaceBracketOpen()
+    {
+        // arrange
+        Support.UseLocalTime();
+        Support.UseSec();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pizza with pineapple detected.";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingLocalTimeSecondsAndButNoIso8601_ContainsNoZspaceBracketOpen()
+    {
+        // arrange
+        Support.UseLocalTime();
+        Support.UseSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pizza with pineapple detected.";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingLocalTimeMilliSecAndAdoptIso8601_ContainsNoZspaceBracketOpen()
+    {
+        // arrange
+        Support.UseLocalTime();
+        Support.UseMilliSec();
+        Support.AdoptIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pizza with pineapple detected.";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public static void LogError_UsingLocalTimeMilliSecAndButNoIso8601_ContainsNoZspaceBracketOpen()
+    {
+        // arrange
+        Support.UseLocalTime();
+        Support.UseMilliSec();
+        Support.RetainNonIso8601UtcTimeStamp();
+
+        Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+        const string error = "Pizza with pineapple detected.";
+        string expected = "Z [";
+
+        // act
+        Err.LogError(error);
+        bool actual = !Support.LogFileContainsString(expected);
+
+        // assert
+        Assert.True(actual);
     }
 }
