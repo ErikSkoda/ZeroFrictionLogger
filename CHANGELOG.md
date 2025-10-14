@@ -112,3 +112,36 @@ Host app devs can still pass the host app name to `InitialiseErrorHandling`, eit
 - `TestCases.cs`
 - `README.md`
 - `CHANGELOG.md`
+
+## [1.1.0] - 2025-10-14 and 2025-10-15
+Deploying update to GitHub (14th) and NuGet (15th).
+
+:arrows_counterclockwise: **Updates**
+
+Log.cs
+- provides **`retain-non-ISO-8601-utc-timestamp.txt`** marker file for backwards compatibility with version 1.0.0, facilitating users preferring the easier to read timestamps over the ones easier to automatically process ISO timestamps.
+- adds **`LogTrace`** available by adding opt-in marker file **`use-trace.txt`** in the host app runtime folder
+- adds support for timestamps in **milliseconds** by adding opt-in marker file **`use-millisec.txt`** in the host app runtime folder
+- caps exception banner to 80 characters in console output
+- sets fallback console encoding to UTF8 when logging to file is not possible
+- adds null checks to `ExplicitlyRedactAndMarkValue`
+- applies `CultureInfo.InvariantCulture` for string formatting
+- abbreviates some intellisense XML comments
+- updates `LoggerVersion` to 1.1.0
+- bugfix in 1.1.0 code base of error discovered while writing and reviewing CHANGELOG.md on GitHub, before deploying to NuGet. Not caught by Roslyn or unit tests.
+
+PascalToSentence.cs
+- Replaces magic numbers with named constants
+- Replaces ToLower() and ToUpper() with ToLowerInvariant() and ToUpperInvariant()
+
+TestSupport.cs
+adds support functions:
+- adds `LogFileContainsRegex` for checking timestamp formats
+- adds `HandleExceptionWithoutStackTraceForTestingPurpose` which forces a division by zero triggering exception handling
+- adds `UseUtc`, `UseLocalTime`, `AdoptIso8601UtcTimeStamp` `RetainNonIso8601UtcTimeStamp` `UseMilliSec` and `UseSec` for unit test readability
+- bugfix in 1.1.0 code base of error discovered while writing and reviewing CHANGELOG.md on GitHub, before deploying to NuGet. Not caught by Roslyn or unit tests.
+
+TestCases.cs
+- increased number of unit tests from 90-ish to 115, covering all public-facing ZFL methods at least twice.
+
+- updated `TestZeroFriction.sln` and `TestLogger.csproj` for running all unit tests after download from GitHub with app name `TestLogger`.
