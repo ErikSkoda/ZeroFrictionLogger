@@ -99,7 +99,7 @@ public static class Support
     public static void AdoptIso8601UtcTimeStamp()
     {
         string opRetainNonIso8601FileSpec =
-            Path.Combine(Err.GetAppPath(), "retain-non-ISO-8610-utc-timestamp.txt");
+            Path.Combine(Err.GetAppPath(), "retain-non-ISO-8601-utc-timestamp.txt");
         if (File.Exists(opRetainNonIso8601FileSpec))
         {
             File.Delete(opRetainNonIso8601FileSpec);
@@ -109,7 +109,7 @@ public static class Support
     public static void RetainNonIso8601UtcTimeStamp()
     {
         string opRetainNonIso8601FileSpec =
-            Path.Combine(Err.GetAppPath(), "retain-non-ISO-8610-utc-timestamp.txt");
+            Path.Combine(Err.GetAppPath(), "retain-non-ISO-8601-utc-timestamp.txt");
         File.Create(opRetainNonIso8601FileSpec).Close();
     }
 
