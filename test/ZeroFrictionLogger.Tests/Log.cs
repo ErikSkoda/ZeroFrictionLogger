@@ -20,33 +20,38 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Reflection;
-using System.Text;
-using System.IO; //required to make Path.DirectorySeparatorChar #compliant with #legacy .Net
 using System;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Globalization;
+using System.IO; //required to make Path.DirectorySeparatorChar #compliant with #legacy .Net
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
 
-//namespace ZeroFrictionLogger; // Not #compliant with #legacy .Net Core 2.1 (Out of Service)
-
-namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Core 8.0 LTS
+namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .Net Core 8.0 LTS
 {
+    /// <summary>
+    /// ZeroFrictionLogger core class.
+    /// </summary>
     public static class Log
     {
+        private static bool _traceEnabled = false;
         private static bool _debugEnabled = true;
         private static bool _infoEnabled = true;
         private static bool _warnEnabled = true;
         private static bool _speedBlinkEnabled = true;
         private static bool _utcEnabled = true;
-        private static string _appName;
+        private static bool _milliSecEnabled = false;
+        private static bool _retainNonIso8601UtcTimeStamp = false;
+        private static string _appName = "";
 
         /// <summary>
         /// Marker to be checked in unit tests to prove
         /// unit tests are indeed using the expected version of the DLL.
         /// </summary>
         /// <returns></returns>
-        public static string LoggerVersion() => "1.0.0";
+        public static string LoggerVersion() => "1.1.0";
 
         /// <summary>
         /// Visual markers, grepable sentinel tags to catch an
@@ -136,7 +141,17 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
             }
             else
             {
-                return "[" + context + "] " + RedactedExpression();
+                if (String.IsNullOrEmpty(value))
+                {
+                    return "[" + context + "] " + RedactedExpression() +
+                        " host app passed null or empty value. " + Zilch();
+                }
+                else
+                {
+                    int len = value.Length;
+                    string asterisk = new string('*', len); // works with.NET core 2.1
+                    return "[" + context + "] " + RedactedExpression() + " " + asterisk;
+                }
             }
         }
 
@@ -187,8 +202,8 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// Logs message at DEBUG level. Opt out by adding marker file:
         /// no-debug.txt in host app path, checked during log initialisation.
         /// Writes data instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="msg">expression passed</param>
         public static void LogDebug(string msg)
@@ -197,11 +212,24 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         }
 
         /// <summary>
+        /// Logs message at TRACE level. Opt out by adding marker file:
+        /// no-trace.txt in host app path, checked during log initialisation.
+        /// Writes data instantly without caching.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
+        /// </summary>
+        /// <param name="msg">expression passed</param>
+        public static void LogTrace(string msg)
+        {
+            if (_traceEnabled) LogMessage($"[TRACE] {msg}");
+        }
+
+        /// <summary>
         /// Logs message at INFO level. Opt out by adding marker file:
         /// no-info.txt in host app path, checked during log initialisation.
         /// Writes data instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="msg">expression passed</param>
         public static void LogInfo(string msg)
@@ -213,8 +241,8 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// Logs message at WARN level. Opt out by adding marker file:
         /// no-warn.txt in host app path, checked during log initialisation.
         /// Writes data instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="msg"></param>
         public static void LogWarning(string msg)
@@ -225,8 +253,8 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// <summary>
         /// Logs message at ERROR level.
         /// Writes data instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="msg">expression passed</param>
         public static void LogError(string msg) => LogMessage($"[ERROR] {msg}");
@@ -234,21 +262,18 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// <summary>
         /// Logs message at FATAL level.
         /// Writes data instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="msg">expression passed</param>
         public static void LogFatal(string msg) => LogMessage($"[FATAL] {msg}");
 
         /// <summary>
         /// Logs message at AUDIT level. Also writes grepable sentinel tag #audit for
-        /// extracting an audit trail from log. The value lies in use when making
-        /// calls to external processes, url's or API's in the host application
-        /// providing a means to extract an audit trail from log using a grepper tool.
-        /// Allows to provide audit trail reports without/before building one in the host app.
-        /// Writes data instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// extracting an audit trail from log. When making calls to external processes,
+        /// url's or API's in the host application this allows grepping audit trails from log.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="msg">expression passed</param>
         public static void LogAudit(string msg) => LogMessage($"[AUDIT] {msg} #audit");
@@ -259,18 +284,21 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// by including marker file: no-speedblink.txt in host app path,
         /// checked during log initialisation.
         /// Writes data to log instantly without caching.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="methodName">using reflection: `MethodBase.GetCurrentMethod().Name`</param>
         /// <param name="errMsg">exception message from catch block, `ex.Message`</param>
-        /// <param name="stackTrace">stack trace from catch block, `ex.StackTrace`stack trace from catch block, `ex.StackTrace`</param>
+        /// <param name="stackTrace">stack trace from catch block, `ex.StackTrace`stack trace from
+        /// catch block, `ex.StackTrace`</param>
         public static void HandleException(string methodName, string errMsg, string stackTrace)
         {
+            if (String.IsNullOrWhiteSpace(methodName)) methodName = "UnknownMethod";
+            if (errMsg == null) errMsg = "[err msg: " + NullExpression() + "]";
+            if (stackTrace == null) stackTrace = "[stack trace: " + NullExpression() + "]";
             ShowExceptionOnConsole(methodName, errMsg);
             ShowExceptionInLog(methodName, errMsg);
-            LogError("tech info: " + FormatExceptionMessage(ReplaceNull(errMsg),
-                ReplaceNull(stackTrace)));
+            LogError("tech info: " + FormatExceptionMessage(errMsg, stackTrace));
         }
 
         /// <summary>
@@ -278,8 +306,8 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// the exception stack trace message, use HandleExceptionWithoutStackTrace in
         /// the try-catch block. Works similar to it's cousin HandleException but replaces
         /// the stack trace message with grepable sentinel tags #redacted #audit.
-        /// Note: logger contains no logic for magically auto-hiding sensitive information.
-        /// As host app dev you remain responsible to prevent sensitive data from entering logs.
+        /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
+        /// before calling.
         /// </summary>
         /// <param name="methodName">using reflection: `MethodBase.GetCurrentMethod().Name`</param>
         /// <param name="errMsg">exception message from catch block, `ex.Message`</param>
@@ -297,11 +325,11 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         /// Retention of logfiles can be achieved either by shell scripts, batch files
         /// or by the host application making a copy.
         /// In case the host appname passed to InitiliaseErrorHandling is `null`, an empty string
-		/// or contains any of the expressions `dotnet`, `xunit`, `testhost`, 
-		/// `zerofrictionlogger`, `zilch` or `.` (not case sensitive) the logger will fall back 
-		/// to the hard coded expression `app`.	
+		/// or contains any of the expressions `dotnet`, `xunit`, `testhost`,
+		/// `zerofrictionlogger`, `zilch` or `.` (not case sensitive) the logger will fall back
+		/// to the hard coded expression `app`.
         /// </summary>
-        /// <param name="appName">appName passed explicitly from the host app 
+        /// <param name="appName">appName passed explicitly from the host app
 		/// using reflection or as string.</param>
         public static void InitialiseErrorHandling(string appName)
         {
@@ -311,8 +339,12 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
 
             if (CanWriteToLogFile())
             {
-                LogAudit(string.Format("Start log initialisation for app: {0}", GetAppName()));
+                LogAudit(string.Format(CultureInfo.InvariantCulture,
+                                       "Start log initialisation for app: {0}",
+                                       GetAppName()));
 
+                LogAudit("trace enabled = " + _traceEnabled.ToString() +
+                    " due to presence/absence of use-trace.txt in app path at initialisation");
                 LogAudit("debug enabled = " + _debugEnabled.ToString() +
                     " due to presence/absence of no-debug.txt in app path at initialisation");
                 LogAudit("info enabled = " + _infoEnabled.ToString() +
@@ -321,11 +353,24 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
                     " due to presence/absence of no-warn.txt in app path at initialisation");
                 LogAudit("utc enabled = " + _utcEnabled.ToString() +
                     " due to presence/absence of no-utc.txt in app path at initialisation");
+                LogAudit("milliseconds enabled = " + _milliSecEnabled.ToString() +
+                    " due to presence/absence of use-millisec.txt in app path at initialisation");
+                if (!_utcEnabled)
+                {
+                    LogAudit("Gentle reminder: opting out of UTC time can complicate automated " +
+                            "log parsing for deep diving purposes.");
+                }
+
+                LogAudit("retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = " +
+                    _retainNonIso8601UtcTimeStamp.ToString() + " due to presence/absence of " +
+                    "retain-non-ISO-8610-utc-timestamp.txt in app path at initialisation");
+
                 LogAudit("speedblink icon enabled = " + _speedBlinkEnabled.ToString() +
                     " due to presence/absence of no-speedblink.txt in app path at initialisation");
-                LogDebug("double check loglevel debug");
-                LogInfo("double check loglevel info");
-                LogWarning("double check loglevel warn");
+                LogTrace("double check loglevel TRACE is active");
+                LogDebug("double check loglevel DEBUG is active");
+                LogInfo("double check loglevel INFO is active");
+                LogWarning("double check loglevel WARN is active");
                 LogAudit("Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] " +
                     "can not be disabled.");
                 LogAudit("Log initialisation complete.");
@@ -333,10 +378,10 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         }
 
         /// <summary>
-        /// **Public for unit test only.** Called by InitialiseErrorHandling. 
-        ///	Check whether the appname, passed 
+        /// **Public for unit test only.** Called by InitialiseErrorHandling.
+        ///	Check whether the appname, passed
         /// from host app or generated by logger is appropriate.
-        /// Inappropriate app names are `null`, empty string or containing `dotnet`, 
+        /// Inappropriate app names are `null`, empty string or containing `dotnet`,
         /// `xunit`, `zerofrictionlogger`, `zilch` or `.`
         /// </summary>
         /// <param name="appName">host app name passed to `InitialiseErrorHandling`</param>
@@ -346,7 +391,7 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
             if (String.IsNullOrEmpty(appName)) return false;
             string appNameLowerCase = appName.ToLower();
             string[] invalid = { "dotnet", "xunit", "testhost", "zerofrictionlogger", "zilch" };
-            return !invalid.Any(appNameLowerCase.Contains) && !appName.Contains(".");
+            return !invalid.Any(appNameLowerCase.Contains) && !appName.Contains('.');
         }
 
         private static string GetAppNameFromHostAppOrOtherwise(string appName)
@@ -358,9 +403,13 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         private static void CheckOptions()
         {
             _utcEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-utc.txt"));
+            _traceEnabled = File.Exists(Path.Combine(GetAppPath(), "use-trace.txt"));
             _debugEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-debug.txt"));
             _infoEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-info.txt"));
             _warnEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-warn.txt"));
+            _milliSecEnabled = File.Exists(Path.Combine(GetAppPath(), "use-millisec.txt"));
+            _retainNonIso8601UtcTimeStamp = File.Exists(Path.Combine(GetAppPath(),
+                                                        "retain-non-ISO-8610-utc-timestamp.txt"));
             _speedBlinkEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-speedblink.txt"));
         }
 
@@ -401,22 +450,63 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
         }
 
         private static string GetExceptionBanner()
-            => string.Format(" + {0} + {0} + {0} + {0} + {0} + {0} + {0} +", GetExceptionTag());
+            => string.Format(CultureInfo.InvariantCulture,
+                             " + {0} + {0} + {0} + {0} + {0} + {0} +",
+                             GetExceptionTag());
 
-        // private static readonly object LockObject = new(); // not #legacy #compliant
         private static readonly object LockObject = new object(); // Works for .Net Core 2.1 + 8.0
 
         private static string GetTimeStamp()
-            => _utcEnabled
-                ? DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
-                : DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        {
+            if (_utcEnabled)
+            {
+                if (_retainNonIso8601UtcTimeStamp)
+                {
+                    if (_milliSecEnabled)
+                    {
+                        return DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff",
+                                                        CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        return DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss",
+                                                        CultureInfo.InvariantCulture);
+                    }
+                }
+                else
+                {
+                    if (_milliSecEnabled)
+                    {
+                        return DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'",
+                                                        CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        return DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                                        CultureInfo.InvariantCulture);
+                    }
+                }
+            }
+            else
+            {
+                if (_milliSecEnabled)
+                {
+                    return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff",
+                                                 CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss",
+                                                 CultureInfo.InvariantCulture);
+                }
+            }
+        }
 
         private static void WriteLineToLog(string logLine)
         {
             try
             {
                 string msg = $"{GetTimeStamp()} {logLine}{Environment.NewLine}";
-                // UTF8Encoding encoding = new(encoderShouldEmitUTF8Identifier: false); //!#legacy
                 UTF8Encoding encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
                 lock (LockObject)
@@ -426,7 +516,18 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
             }
             catch (Exception)
             {
-                Console.WriteLine(logLine);
+                Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+                if (logLine.StartsWith("[WARN]", StringComparison.Ordinal)
+                    || logLine.StartsWith("[ERROR]", StringComparison.Ordinal)
+                    || logLine.StartsWith("[FATAL]", StringComparison.Ordinal))
+                {
+                    Console.Error.WriteLine($"{GetTimeStamp()} {logLine}");
+                }
+                else
+                {
+                    Console.WriteLine($"{GetTimeStamp()} {logLine}");
+                }
             }
         }
 
@@ -438,6 +539,7 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
             }
             catch (Exception)
             {
+                Console.OutputEncoding = System.Text.Encoding.UTF8;
                 Console.WriteLine($"log to file #failed: {ReplaceNull(msg)}");
             }
         }
@@ -469,7 +571,6 @@ namespace ZeroFrictionLogger // #compliant with #legacy Net Core 2.1 and .Net Co
 
         private static void CreateLogFile()
         {
-            // StreamWriter file = new(GetLogPathAndFilename()); // not #legacy #compliant
             StreamWriter file = new StreamWriter(GetLogPathAndFilename()); //OK 4 .Net Core 2.1-8.0
             file.Close();
         }
