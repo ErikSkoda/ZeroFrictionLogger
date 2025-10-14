@@ -363,7 +363,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
 
                 LogAudit("retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = " +
                     _retainNonIso8601UtcTimeStamp.ToString() + " due to presence/absence of " +
-                    "retain-non-ISO-8610-utc-timestamp.txt in app path at initialisation");
+                    "retain-non-ISO-8601-utc-timestamp.txt in app path at initialisation");
 
                 LogAudit("speedblink icon enabled = " + _speedBlinkEnabled.ToString() +
                     " due to presence/absence of no-speedblink.txt in app path at initialisation");
@@ -409,7 +409,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
             _warnEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-warn.txt"));
             _milliSecEnabled = File.Exists(Path.Combine(GetAppPath(), "use-millisec.txt"));
             _retainNonIso8601UtcTimeStamp = File.Exists(Path.Combine(GetAppPath(),
-                                                        "retain-non-ISO-8610-utc-timestamp.txt"));
+                                                        "retain-non-ISO-8601-utc-timestamp.txt"));
             _speedBlinkEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-speedblink.txt"));
         }
 
