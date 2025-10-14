@@ -1,11 +1,13 @@
 ## ZeroFrictionLogger
-Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
+**TL;DR** Zero config, zero dependency exception handler and logger, logs designed for both human reading and automated processing.
 
 Features thread-safe logging, fallback to console and speedblink testing. **logger source code** builds and runs on .NET Core 2.1 and 8.0 LTS; have seen it build and run on Linux with .NET Core 8.0 LTS. Writes to log without caching. Prebuilt **DLL** on NuGet targets `netstandard2.1`; [Logger test project source code, including the logger core](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests), is available on GitHub. See the **Quick Start** section for... a quick start :)
 
-150-ish lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML)
+186 lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML) covered by 115 unit tests.
 
-See screenshots of passing unit tests and latest documentation updates on [GitHub README](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/README.md).
+**Gentle reminder:** Drop in marker file `retain-non-ISO-8601-utc-timestamp.txt` in the host app runtime folder to keep using the more human readable v1.0.0 utc-timestamps (e.g. `2025-10-14 17:29:32`). From version 1.1.0 ZFL uses the ISO-8601 utc timestamps (e.g. `2025-10-14T17:29:32Z`) for easier automated log processing by default. All other updates (like using milliseconds and TRACE-level logging) are opt-in. See [CHANGELOG.md](CHANGELOG.md) for version 1.0.0 details.
+
+See screenshots of passing **unit tests**, coverage and latest documentation updates on [GitHub README](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/README.md).
 
 ## Context
 Originally a by-product of a Test Automation Framework running on tool servers, VMs or bare metal, built to support teams testing mission-critical Systems Under Test running on Dev, Test, Acceptance - and, on one rare occasion, Live environments.
@@ -60,17 +62,29 @@ Gentle reminder: there is **no way to opt out** of levels [ERROR], [FATAL] and [
 While a pilot might be grateful for an ejection seat to leave a burning plane, the gratitude probably lasts longer if a parachute is included.
 
 ## Speedblink testing
-The exception handling methods include a visual marker, grepable sentinel tag designed to stand out of monotonous log lines.
+Tools like `find`, `grep` and fuzzy find are the fastest way to find known anomalies. Under pressure, you may end up scanning logs with your eyes nonetheless.
+When scrolling and speedreading, any break in monotony - like indentation, blank lines, or unusual shapes - appear like *movement* on screen, drawing attention.
+The exception handling methods include a visual marker to that end.
 
 ### idea
-*Builds on an insight taught by James Bach, creator of the Rapid Software Testing Methodology.*
-The idea being the human brain is hard wired to perceive movement as danger. A literal life hack to survive in a dangerous environment - the savannah.
+Builds on an insight taught by James Bach, creator of the Rapid Software Testing Methodology. The idea being the human brain is hard wired to **detect movement as potential danger**, a survival mechanism built in over eons of evolution. A literal life hack to survive in a dangerous environment - the savannah.
 
-When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant.
+When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to the movement of flames. Same for fish swimming in a fish tank or a TV screen with a sports game in a restaurant. The marker assists spotting anomalies under pressure. You can still find #exception by means of find or grep, it's just an extra hook for catching exceptions.
 
 ### Opt out
 - **Opt out of speedblink marker** by adding `no-speedblink.txt` in the host app bin folder, checked by `InitialiseErrorHandling`
 - Alternatively grep out #speedblink afterwards, combining visual markers with improved likelyhood of pipeline compliance.
+
+### Example
+```text
+2025-07-21 08:29:35 #speedblink
+      ___   __  __   ___    #speedblink
+     |  _|  \ \/ /  |_  |   #speedblink
+     | |     \  /     | |   #speedblink
+     | |_    /  \    _| |   #speedblink
+     |___|  /_/\_\  |___|   #speedblink
+                            #speedblink
+```
 
 ## Timezone - UTC by default, local possible
 Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
@@ -122,21 +136,24 @@ Err.LogError("Pizza with pineapple detected");
 Err.LogFatal("It was at that moment Nathan knew...");
 ```
 
-### Opt out of default behaviour, full list
+### Opt in/out of default behaviour, full list
 You may want to customize logger behaviour. Here is how:
 
-| Opt out of       | Marker file         | Notes                                                                   |
-|------------------|---------------------|-------------------------------------------------------------------------|
-| log level DEBUG  | `no-debug.txt`      | Checked once by `InitialiseErrorHandling()`                            |
-| log level INFO   | `no-info.txt`       | Checked once by `InitialiseErrorHandling()`                            |
-| log level WARN   | `no-warn.txt`       | Checked once by `InitialiseErrorHandling()`                            |
-| log level ERROR  | **not possible**    | Always logged                                                          |
-| log level FATAL  | **not possible**    | Always logged                                                          |
-| log level AUDIT  | **not possible**    | Always logged                                                          |
-| speedblink text  | `no-speedblink.txt` | Checked once by `InitialiseErrorHandling()`                            |
-| using UTC time   | `no-utc.txt`        | Checked once by `InitialiseErrorHandling()`, alternative is local time |
+| Opt in/out of                                   | Marker file                             | Notes                                                                   |
+|-------------------------------------------------|-----------------------------------------|-------------------------------------------------------------------------|
+| retaining v1.0.0 more human readable timestamps | `retain-non-ISO-8601-utc-timestamp.txt` | Checked once by `InitialiseErrorHandling()`                            |
+| log level TRACE                                 | `use-trace.txt`                         | Checked once by `InitialiseErrorHandling()`                            |
+| log level DEBUG                                 | `no-debug.txt`                          | Checked once by `InitialiseErrorHandling()`                            |
+| log level INFO                                  | `no-info.txt`                           | Checked once by `InitialiseErrorHandling()`                            |
+| log level WARN                                  | `no-warn.txt`                           | Checked once by `InitialiseErrorHandling()`                            |
+| log level ERROR                                 | **not possible**                        | Always logged                                                          |
+| log level FATAL                                 | **not possible**                        | Always logged                                                          |
+| log level AUDIT                                 | **not possible**                        | Always logged                                                          |
+| speedblink text                                 | `no-speedblink.txt`                     | Checked once by `InitialiseErrorHandling()`                            |
+| using UTC time                                  | `no-utc.txt`                            | Checked once by `InitialiseErrorHandling()`, alternative is local time |
+| use milliseconds                                | `use-millisec.txt`                      | Checked once by `InitialiseErrorHandling()`                            |
 
-*`InitialiseErrorHandling()` checks marker file presence in the host app bin folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
+*`InitialiseErrorHandling()` checks marker file presence in the host app runtime folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
 
 ### Creating a report from grepable markers - Out of scope but not out of heart
 While **out of scope** for the logger, extracting an audit (or any) report from logfile based on a grepable marker (here `#audit`) can be a real time saver - allowing you to create reports before they are built.
@@ -245,42 +262,46 @@ There are **many** great and feature rich loggers out there, some including adva
 
 ## Example log output
 ```text
-2025-07-21 08:29:17 [AUDIT] start log. #audit
-2025-07-21 08:29:17 [AUDIT] Start log initialisation for app: ConsoleAppWithLogging #audit
-2025-07-21 08:29:17 [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
-2025-07-21 08:29:17 [AUDIT] info enabled = True due to presence/absence of no-info.txt in app path at initialisation #audit
-2025-07-21 08:29:17 [AUDIT] warn enabled = True due to presence/absence of no-warn.txt in app path at initialisation #audit
-2025-07-21 08:29:17 [AUDIT] utc enabled = True due to presence/absence of no-utc.txt in app path at initialisation #audit
-2025-07-21 08:29:17 [AUDIT] speedblink icon enabled = True due to presence/absence of no-speedblink.txt in app path at initialisation #audit
-2025-07-21 08:29:17 [DEBUG] double check loglevel debug
-2025-07-21 08:29:17 [INFO] double check loglevel info
-2025-07-21 08:29:17 [WARN] double check loglevel warn
-2025-07-21 08:29:17 [AUDIT] Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] can not be disabled. #audit
-2025-07-21 08:29:17 [AUDIT] Log initialisation complete. #audit
+2025-10-14T17:29:32Z [AUDIT] start log. #audit
+2025-10-14T17:29:32Z [AUDIT] Start log initialisation for app: ConsoleAppTestingLoggingNetCore2dot1OutOfSupport #audit
+2025-10-14T17:29:32Z [AUDIT] trace enabled = False due to presence/absence of use-trace.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] info enabled = True due to presence/absence of no-info.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] warn enabled = True due to presence/absence of no-warn.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] utc enabled = True due to presence/absence of no-utc.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] milliseconds enabled = True due to presence/absence of use-millisec.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = False due to presence/absence of retain-non-ISO-8601-utc-timestamp.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [AUDIT] speedblink icon enabled = True due to presence/absence of no-speedblink.txt in app path at initialisation #audit
+2025-10-14T17:29:32Z [DEBUG] double check loglevel DEBUG is active
+2025-10-14T17:29:32Z [INFO] double check loglevel INFO is active
+2025-10-14T17:29:32Z [WARN] double check loglevel WARN is active
+2025-10-14T17:29:32Z [AUDIT] Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] can not be disabled. #audit
+2025-10-14T17:29:32Z [AUDIT] Log initialisation complete. #audit
 ...
-2025-07-21 08:29:35 [INFO] Rain in Ireland has been referred to me as liquid sunshine.
-2025-07-21 08:29:35 [WARN] Animal print pants out control.
-2025-07-21 08:29:35 [ERROR] Pizza with pineapple is a recoverable error.
-2025-07-21 08:29:35 [FATAL] It was at that moment Nathan knew, he'd bleep-ed up.
+2025-10-14T17:29:32Z [INFO] Rain in Ireland has been referred to me as liquid sunshine.
+2025-10-14T17:29:32Z [WARN] Animal print pants outta control.
+2025-10-14T17:29:32Z [ERROR] Pizza with pineapple detected.
+2025-10-14T17:29:32Z [FATAL] It was at that moment Nathan knew, he'd bleep-ed up.
 ...
-2025-07-21 08:29:35 #speedblink
+2025-10-14T17:29:32Z #speedblink
       ___   __  __   ___    #speedblink
      |  _|  \ \/ /  |_  |   #speedblink
      | |     \  /     | |   #speedblink
      | |_    /  \    _| |   #speedblink
      |___|  /_/\_\  |___|   #speedblink
                             #speedblink
-2025-07-21 08:29:35 [ERROR] Cause exception for demo purpose
-2025-07-21 08:29:35 [ERROR] Attempted to divide by zero. #exception
-2025-07-21 08:29:35 [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
+2025-10-14T17:29:32Z [ERROR] Cause exception for demo purpose
+2025-10-14T17:29:32Z [ERROR] Attempted to divide by zero. #exception
+2025-10-14T17:29:32Z [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
 ```
 
 ## Unit tests
 Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests) for verification and living documentation through practical examples.
 
-![Unit Tests Passing on Windows (1 of 2)](docs/images/pass_on_windows_1of2.PNG)
-![Unit Tests Passing on Windows (2 of 2)](docs/images/pass_on_windows_2of2.PNG)
-![Unit Tests Passing on Linux](docs/images/pass_on_linux.PNG)
+![Unit Tests Passing on Windows (1 of 2)](docs/images/v110_pass_on_windows_1of2.png)
+![Unit Tests Passing on Windows (2 of 2)](docs/images/v110_pass_on_windows_2of2.png)
+![Unit Tests Passing on Linux](docs/images/v110_pass_on_linux.png)
+![Unit Tests Passing on Linux](docs/images/unit_test_coverage.png)
 
 ## Full documentation  
 Public method documentation of [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs).
@@ -306,7 +327,7 @@ Checks whether a value equals `Zilch()`.
 **Parameters:**  
 - `value`
 
-**Returns:** boolean
+**Returns:** `boolean`
 
 ---
 
@@ -429,16 +450,30 @@ Replaces a call to the Humanizer package to remain at zero dependencies.
 
 ---
 
+### LogTrace  
+Logs message at TRACE level. Opt-in by adding marker file:  
+`use-trace.txt` in host app path, checked during log initialisation.  
+Writes data instantly without caching.  
+
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
+
+**Parameters:**  
+- `msg`
+
+---
+
 ### LogDebug  
 Logs message at DEBUG level. Opt-out by adding marker file:  
 `no-debug.txt` in host app path, checked during log initialisation.  
 Writes data instantly without caching.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `msg`
+
 
 ---
 
@@ -447,8 +482,8 @@ Logs message at INFO level. Opt-out by adding marker file:
 `no-info.txt` in host app path, checked during log initialisation.  
 Writes data instantly without caching.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `msg`
@@ -460,8 +495,8 @@ Logs message at WARN level. Opt-out by adding marker file:
 `no-warn.txt` in host app path, checked during log initialisation.  
 Writes data instantly without caching.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `msg`
@@ -472,8 +507,8 @@ As host app dev you remain responsible to prevent sensitive data from entering l
 Logs message at ERROR level.  
 Writes data instantly without caching.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `msg`
@@ -486,8 +521,8 @@ extracting an audit trail from log. Useful when making calls to external process
 in the host application, providing a means to extract audit reports via grep tools.  
 Writes data instantly without caching.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `msg`
@@ -496,12 +531,12 @@ As host app dev you remain responsible to prevent sensitive data from entering l
 
 ### LogAudit  
 Logs message at AUDIT level. Also writes grepable sentinel tag `#audit` for  
-extracting an audit trail from log. Useful when making calls to external processes, URLs, or APIs  
-in the host application, providing a means to extract audit reports via grep tools.  
-Writes data instantly without caching.  
+extracting an audit trail from log. When making calls to external processes,
+url's or API's in the host application this allows grepping audit trails from log.
+Writes data instantly without caching.
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `msg`
@@ -526,8 +561,8 @@ Logs at ERROR level and also writes a speedblink message by default.
 Opt-out by including marker file: `no-speedblink.txt` in host app path,  
 checked during log initialisation. Writes data to log instantly without caching.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
 
 **Parameters:**  
 - `methodName` methodname obtained through reflection: MethodBase.GetCurrentMethod().Name
@@ -542,8 +577,9 @@ the exception stack trace message, use `HandleExceptionWithoutStackTrace` in
 the try-catch block. Works similar to its cousin `HandleException` but replaces  
 the stack trace message with grepable sentinel tags `#redacted #audit`.  
 
-**Note:** Logger contains no logic for magically auto-hiding sensitive information.  
-As host app dev you remain responsible to prevent sensitive data from entering logs.
+**Note:** logger does not auto-hide sensitive data. Ensure sensitive data is handled  
+before calling.
+
 **Parameters:**  
 then
 - `methodName` using reflection: `MethodBase.GetCurrentMethod().Name`
@@ -575,3 +611,4 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
