@@ -146,3 +146,5 @@ TestCases.cs
 
 - updated `TestZeroFriction.sln` and `TestLogger.csproj` for running all unit tests after download from GitHub with app name `TestLogger`.
 
+## [1.1.0] - 2025-11-24 (no change to version number)
+Uploading benchmark project to GitHub in folder **benchmarks**. Contains a console project measuring 4 different refactorings of the code for converting PascalCase to sentence.
