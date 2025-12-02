@@ -110,7 +110,7 @@ Nuget package targetting `.netstandard2.1` is available on NuGet.
 To use the logger in older environments, build from source (see below)
 
 ### TestZeroFriction Source and Unit Test (Living Documentation)
-Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** from GitHub, containing:
+The xUnit test project **TestZeroFrictionLogger.sln** is available on GitHub:
 
 **Logger core:**
 - [`Log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)
@@ -623,6 +623,7 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
 
 
 
