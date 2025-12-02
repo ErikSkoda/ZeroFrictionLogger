@@ -48,35 +48,35 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Marker to be checked in unit tests to prove
         /// unit tests are indeed using the expected version of the DLL.
         /// </summary>
-        /// <Returns>build nr of logger to be published</Returns>
+        /// <returns>build nr of logger to be published</returns>
         public static string LoggerVersion() => "1.1.1";
 
         /// <summary>
         /// Visual markers, grepable sentinel tags to catch an
         /// uninitialized state and to prevent silent errors.
         /// </summary>
-        /// <Returns>#zilch #iota #diddly squat</Returns>
+        /// <returns>#zilch #iota #diddly squat</returns>
         public static string Zilch() => "#zilch #iota #diddly squat";
 
         /// <summary>
         /// Checks whether a value equals Zilch()
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <Returns>boolean</Returns>
+        /// <returns>boolean</returns>
         public static bool IsZilch(string value) => value == Zilch();
 
         /// <summary>
         /// Checks whether a value is different from Zilch()
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <Returns>boolean</Returns>
+        /// <returns>boolean</returns>
         public static bool NotZilch(string value) => value != Zilch();
 
         /// <summary>
         /// Visual markers, grepable sentinel tag to catch an
         /// uninitialized state and to prevent silent errors.
         /// </summary>
-        /// <Returns>boolean</Returns>
+        /// <returns>boolean</returns>
         public static string NullExpression() => "#null-value";
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// sentinel tag "#null-value".
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <Returns>value or #null-value</Returns>
+        /// <returns>value or #null-value</returns>
         public static string ReplaceNull(string value) => value ?? NullExpression();
 
         /// <summary>
@@ -92,14 +92,14 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// in which case it returns #zilch #iota #diddly-squat.
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <Returns>value or #zilch #iota #diddly-squat</Returns>
+        /// <returns>value or #zilch #iota #diddly-squat</returns>
         public static string ReplaceNullOrEmpty(string value)
             => string.IsNullOrEmpty(value) ? Zilch() : value;
 
         /// <summary>
         /// Visual marker, grepable sentinel value for replacing data to be redacted.
         /// </summary>
-        /// <Returns>value or #redacted #audit</Returns>
+        /// <returns>value or #redacted #audit</returns>
         public static string RedactedExpression() => "#redacted " + GetAuditTag();
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Returns false when value is null.
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <Returns>boolean</Returns>
+        /// <returns>boolean</returns>
         public static bool IsRedacted(string value) => value == RedactedExpression();
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// </summary>
         /// <param name="context">UNREDACTED context info for prefixing redaction markers</param>
         /// <param name="value">Value replaced with a redaction marker</param>
-        /// <Returns>[context (UNREDACTED!)] + #redacted #audit</Returns>
+        /// <returns>[context (UNREDACTED!)] + #redacted #audit</returns>
         public static string ExplicitlyRedactAndMarkValue(string context, string value)
         {
             string result;
@@ -158,7 +158,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// <summary>
         /// Returns log file extension for use by host application for handling log file retention.
         /// </summary>
-        /// <Returns>.log</Returns>
+        /// <returns>.log</returns>
         public static string GetLogFileExtension() => ".log";
 
         /// <summary>
@@ -166,14 +166,14 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// is: `null`, `empty string` or contains `dotnet`, `xunit`, `testhost`,
         /// `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
         /// </summary>
-        /// <Returns>host app name</Returns>
+        /// <returns>host app name</returns>
 		[MethodImpl(MethodImplOptions.NoInlining)]
         public static string GetAppName() => _appName;
 
         /// <summary>
         /// Returns host app path using System.AppContext.
         /// </summary>
-        /// <Returns>host app path</Returns>
+        /// <returns>host app path</returns>
         public static string GetAppPath()
             => AppContext.BaseDirectory.TrimEnd(
                 Path.DirectorySeparatorChar,
@@ -182,7 +182,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// <summary>
         /// Returns app path and app name based logfile name.
         /// </summary>
-        /// <Returns>logfile path and filename</Returns>
+        /// <returns>logfile path and filename</returns>
         public static string GetLogPathAndFilename()
             => Path.Combine(GetAppPath(), GetAppName() + GetLogFileExtension()); //#legacy proof
 
@@ -192,7 +192,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Replaces a call to the Humanizer package to remain at zero dependencies.
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <Returns>sentence</Returns>
+        /// <returns>sentence</returns>
         public static string ConvertPascalCaseToSentence(string value)
         {
             return PascalToSentence.ConvertPascalCaseToSentence(value); // zero #dependencies
@@ -244,7 +244,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Note: logger does not auto-hide sensitive data. Ensure sensitive data is handled
         /// before calling.
         /// </summary>
-        /// <param name="msg"></param>
+        /// <param name="msg">expression passed</param>
         public static void LogWarning(string msg)
         {
             if (_warnEnabled) LogMessage($"[WARN] {msg}");
@@ -385,7 +385,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// `xunit`, `zerofrictionlogger`, `zilch` or `.`
         /// </summary>
         /// <param name="appName">host app name passed to `InitialiseErrorHandling`</param>
-        /// <Returns>boolean</Returns>
+        /// <returns>boolean</returns>
         public static bool IsAppNameOK(string appName)
         {
             if (String.IsNullOrEmpty(appName)) return false;
