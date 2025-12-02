@@ -1509,7 +1509,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     public static void LoggerVersion_Returns_1dot0dot0()
     {
         // arrange
-        string expected = "1.1.0";
+        string expected = "1.1.1";
 
         // act
         string actual = Err.LoggerVersion();
@@ -1694,7 +1694,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void LogError_UsingNonIso8601UtcTimeAndSeconds_ContainsNoZ()
+    public static void LogError_UsingNonIso8601UtcTimeAndSeconds_ContainsNoZSpaceBracketOpen()
     {
         // arrange
         Support.UseUtc();
@@ -1703,7 +1703,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
 
         Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
         const string error = "Character: 'capital z' expected missing";
-        string expected = "Z";
+        string expected = "Z [";
 
         // act
         Err.LogError(error);
