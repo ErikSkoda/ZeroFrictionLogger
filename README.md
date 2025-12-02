@@ -5,9 +5,156 @@ Features thread-safe logging, fallback to console and speedblink testing. **logg
 
 186 lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML) covered by 115 dual purpose unit tests, providing proof of work and low-level living documentation.
 
-**Gentle reminder:** Drop in marker file `retain-non-ISO-8601-utc-timestamp.txt` in the host app runtime folder to keep using the more human readable v1.0.0 utc-timestamps (e.g. `2025-10-14 17:29:32`). From version 1.1.0 ZFL uses the ISO-8601 utc timestamps (e.g. `2025-10-14T17:29:32Z`) for easier automated log processing by default. All other updates (like using milliseconds and TRACE-level logging) are opt-in. See [CHANGELOG.md](CHANGELOG.md) for version 1.0.0 details.
+**Gentle reminder:** Drop in marker file `retain-non-ISO-8601-utc-timestamp.txt` in the host app runtime folder to keep using the more human readable v1.0.0 utc-timestamps (e.g. `2025-10-14 17:29:32`). From version 1.1.0 onwards ZFL uses the ISO-8601 utc timestamps (e.g. `2025-10-14T17:29:32Z`) for easier automated log processing by default. All other updates (like using milliseconds and TRACE-level logging) are opt-in. See [CHANGELOG.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CHANGELOG.md) for version 1.1.1 details.
 
 See screenshots of passing **unit tests**, coverage and latest documentation updates on [GitHub README](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/README.md).
+
+## Quick Start
+
+### Using directive
+```csharp
+using System.Reflection;
+using Err = ZeroFrictionLogger.Log;
+```
+
+### Initialise
+```csharp
+Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
+```
+
+### Handle exception
+```csharp
+catch (Exception ex)
+{
+    Err.HandleException(MethodBase.GetCurrentMethod().Name, ex.Message, ex.StackTrace);
+}
+```
+
+### ...without stack trace
+```csharp
+catch (Exception ex)
+{
+    Err.HandleExceptionWithoutStackTrace(MethodBase.GetCurrentMethod().Name, ex.Message);
+}
+```
+
+### Logging
+```csharp
+Err.LogDebug("Penicillin discovered by accident");
+Err.LogInfo("Rain in Ireland identified as liquid sunshine");
+Err.LogWarning("Animal print pants outta control");
+Err.LogAudit("Calling external process xyz");
+Err.LogError("Pizza with pineapple detected");
+Err.LogFatal("It was at that moment Nathan knew...");
+```
+
+### Opt in/out of default behaviour, full list
+You may want to customize logger behaviour. Here is how:
+
+| Opt in/out of                                   | Marker file                             | Notes                                                                   |
+|-------------------------------------------------|-----------------------------------------|-------------------------------------------------------------------------|
+| retaining v1.0.0 more human readable timestamps | `retain-non-ISO-8601-utc-timestamp.txt` | Checked once by `InitialiseErrorHandling()`                            |
+| log level TRACE                                 | `use-trace.txt`                         | Checked once by `InitialiseErrorHandling()`                            |
+| log level DEBUG                                 | `no-debug.txt`                          | Checked once by `InitialiseErrorHandling()`                            |
+| log level INFO                                  | `no-info.txt`                           | Checked once by `InitialiseErrorHandling()`                            |
+| log level WARN                                  | `no-warn.txt`                           | Checked once by `InitialiseErrorHandling()`                            |
+| log level ERROR                                 | **not possible**                        | Always logged                                                          |
+| log level FATAL                                 | **not possible**                        | Always logged                                                          |
+| log level AUDIT                                 | **not possible**                        | Always logged                                                          |
+| speedblink text                                 | `no-speedblink.txt`                     | Checked once by `InitialiseErrorHandling()`                            |
+| using UTC time                                  | `no-utc.txt`                            | Checked once by `InitialiseErrorHandling()`, alternative is local time |
+| use milliseconds                                | `use-millisec.txt`                      | Checked once by `InitialiseErrorHandling()`                            |
+
+*`InitialiseErrorHandling()` checks marker file presence in the host app runtime folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
+
+### Creating a report from grepable markers - Out of scope but not out of heart
+While **out of scope** for the logger, extracting an audit (or any) report from logfile based on a grepable marker (here `#audit`) can be a real time saver - allowing you to create reports before they are built.
+
+The one-liner below works from Windows CMD. Tested, works.
+
+`findstr /C:#audit app.log > audit.txt`
+
+Copied this one-liner from my Linux VM. It works.
+
+`grep "#audit" Test.log > audit.txt`
+
+### Log file retention - Out of scope but not out of heart
+My TAF host app handles log file retention programmatically, making a copy to report folder where it can also be accessed from the HTML report. While retention is **out of scope** for the logger itself for the sake of simplicity, you can still archive logs with a timestamp in a straighforward way. Below you find a **Windows CMD batchfile** example adding a YYYY-MM-DD_HH_MM_SSmm prefix to `app.log`.
+
+It does pad hours before 10:00 to prevent filename issues. Does not require PowerShell.
+
+Tested it, `app.log` was copied to `2025-08-14_09_09_1228-app.log` **OK**.
+
+``` CMD batch file
+set dd=%DATE:~7,2%
+set mm=%DATE:~4,2%
+set yyyy=%DATE:~-4%
+set hh=%time:~0,2%
+set hh=%hh: =0%
+set min=%time:~3,2%
+set ss=%time:~6,2%
+set ms=%time:~9,2%
+
+set timestamp=%yyyy%-%mm%-%dd%_%hh%_%min%_%ss%%ms%
+
+REM echo timestamp = %timestamp%
+
+copy app.log %timestamp%-app.log
+```
+
+**and now the same on Linux:**
+```bash
+cp app.log "$(date +%Y-%m-%d_%H_%M_%S%2N)-app.log"
+```
+
+### NuGet package
+Nuget package targetting `.netstandard2.1` is available on NuGet.
+To use the logger in older environments, build from source (see below)
+
+### TestZeroFriction Source and Unit Test (Living Documentation)
+Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** from GitHub, containing:
+
+**Logger core:**
+- [`Log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)
+- [`PascalToSentence.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)
+
+**Test Suite:**
+- `TestCases.cs` (115-ish xUnit unit tests)
+- `TestSupport.cs` (log content check)
+- `AssemblyInfo.cs` (enforce sequential xUnit test execution)
+
+**Test Project Config:**
+- `TestZeroFrictionLogger.sln`
+- `Test.csproj` (.NET Core project file)
+
+**Note:** The test project uses [xUnit](https://xunit.net/?tabs=cs) for testing. Make sure you have it installed to build and run the tests. The test project uses .NET 8.0 and the latest xUnit packages. While the logger core supports .NET 6.0 (and earlier), the *test project* will **not** build on .NET 6.0.
+
+Currently, the xUnit test project - using the latest components - builds and runs on **.NET Core 8.0**.
+
+:white_check_mark: **Unit tests pass on both Windows and Linux (Ubuntu LTS)**
+All unit tests were confirmed passing before sharing the test project on GitHub.
+
+### Platform Compatibility Matrix
+
+| ZeroFrictionLogger                               | Windows        | Linux (LTS)    | Mac OS           |
+|--------------------------------------------------|----------------|----------------|------------------|
+| Builds on .NET Core 8.0                          | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
+| Runs on .NET Core 8.0 (demo app)                 | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
+| xUnit unit tests passing with .NET Core 8.0      | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
+| Builds on .NET Core 6.0                          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed   | :hourglass_flowing_sand: Not confirmed |
+| Runs on .NET Core 6.0 (demo app)                 | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed   | :hourglass_flowing_sand: Not confirmed |
+| xUnit unit tests passing with .NET Core 6.0      | :x: Not building | :x: Not building | :hourglass_flowing_sand: Not confirmed   |
+| Builds on .NET Core 2.1 *(Out of Service)*       | :white_check_mark: builds :warning: end-of-life   | :warning: end-of-life   | :warning: end-of-life     |
+| Runs on .NET Core 2.1 *(Out of Service)* (demo)  | :white_check_mark: runs :warning: end-of-life     | :warning: end-of-life   | :warning: end-of-life     |
+
+:warning: .NET Core 2.1 is out of support.
+
+### Build from Source
+1. Download [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)` and `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs) from GitHub.
+2. In Solution Explorer:
+- Right-click on your Project
+- Select **Add -> Existing item...**
+3. Select the two downloaded `.cs` files and click **Add**
 
 ## Context
 Originally a by-product of a Test Automation Framework running on tool servers, VMs or bare metal, built to support teams testing mission-critical Systems Under Test running on Dev, Test, Acceptance - and, on one rare occasion, Live environments.
@@ -97,148 +244,6 @@ The app creates the log at start, replacing any previous log. Retention of logfi
 ## log path and location
 Logs are created in the host app bin folder, using the app name with .log extension.
 
-## Quick Start
-
-### Using directive
-```csharp
-using System.Reflection;
-using Err = ZeroFrictionLogger.Log;
-```
-
-### Initialise
-```csharp
-Err.InitialiseErrorHandling(Assembly.GetExecutingAssembly().GetName().Name);
-```
-
-### Handle exception
-```csharp
-catch (Exception ex)
-{
-    Err.HandleException(MethodBase.GetCurrentMethod().Name, ex.Message, ex.StackTrace);
-}
-```
-
-### ...without stack trace
-```csharp
-catch (Exception ex)
-{
-    Err.HandleExceptionWithoutStackTrace(MethodBase.GetCurrentMethod().Name, ex.Message);
-}
-```
-
-### Logging
-```csharp
-Err.LogDebug("Penicillin discovered by accident");
-Err.LogInfo("Rain in Ireland identified as liquid sunshine");
-Err.LogWarning("Animal print pants outta control");
-Err.LogAudit("Calling external process xyz");
-Err.LogError("Pizza with pineapple detected");
-Err.LogFatal("It was at that moment Nathan knew...");
-```
-
-### Opt in/out of default behaviour, full list
-You may want to customize logger behaviour. Here is how:
-
-| Opt in/out of                                   | Marker file                             | Notes                                                                   |
-|-------------------------------------------------|-----------------------------------------|-------------------------------------------------------------------------|
-| retaining v1.0.0 more human readable timestamps | `retain-non-ISO-8601-utc-timestamp.txt` | Checked once by `InitialiseErrorHandling()`                            |
-| log level TRACE                                 | `use-trace.txt`                         | Checked once by `InitialiseErrorHandling()`                            |
-| log level DEBUG                                 | `no-debug.txt`                          | Checked once by `InitialiseErrorHandling()`                            |
-| log level INFO                                  | `no-info.txt`                           | Checked once by `InitialiseErrorHandling()`                            |
-| log level WARN                                  | `no-warn.txt`                           | Checked once by `InitialiseErrorHandling()`                            |
-| log level ERROR                                 | **not possible**                        | Always logged                                                          |
-| log level FATAL                                 | **not possible**                        | Always logged                                                          |
-| log level AUDIT                                 | **not possible**                        | Always logged                                                          |
-| speedblink text                                 | `no-speedblink.txt`                     | Checked once by `InitialiseErrorHandling()`                            |
-| using UTC time                                  | `no-utc.txt`                            | Checked once by `InitialiseErrorHandling()`, alternative is local time |
-| use milliseconds                                | `use-millisec.txt`                      | Checked once by `InitialiseErrorHandling()`                            |
-
-*`InitialiseErrorHandling()` checks marker file presence in the host app runtime folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
-
-### Creating a report from grepable markers - Out of scope but not out of heart
-While **out of scope** for the logger, extracting an audit (or any) report from logfile based on a grepable marker (here `#audit`) can be a real time saver - allowing you to create reports before they are built.
-
-The one-liner below works from Windows CMD. Tested, works.
-
-`findstr /C:#audit app.log > audit.txt`
-
-Copied this one-liner from my Linux VM. It works.
-
-`grep "#audit" Test.log > audit.txt`
-
-### Log file retention - Out of scope but not out of heart
-My TAF host app handles log file retention programmatically, making a copy to report folder where it can also be accessed from the HTML report. While retention is **out of scope** for the logger itself for the sake of simplicity, you can still archive logs with a timestamp in a straighforward way. Below you find a Windows CMD batchfile example adding a YYYY-MM-DD_HH_MM_SSmm prefix to `app.log`.
-
-It does pad hours before 10:00 to prevent filename issues. Does not require PowerShell.
-
-Tested it, `app.log` was copied to `2025-08-14_09_09_1228-app.log` **OK**.
-
-``` CMD batch file
-set dd=%DATE:~7,2%
-set mm=%DATE:~4,2%
-set yyyy=%DATE:~-4%
-set hh=%time:~0,2%
-set hh=%hh: =0%
-set min=%time:~3,2%
-set ss=%time:~6,2%
-set ms=%time:~9,2%
-
-set timestamp=%yyyy%-%mm%-%dd%_%hh%_%min%_%ss%%ms%
-
-REM echo timestamp = %timestamp%
-
-copy app.log %timestamp%-app.log
-```
-
-### NuGet package
-Nuget package targetting `.netstandard2.1` is available on NuGet.
-To use the logger in older environments, build from source (see below)
-
-### TestZeroFriction Source and Unit Test (Living Documentation)
-Early adopters can download xUnit test project **TestZeroFrictionLogger.sln** from GitHub, containing:
-
-**Logger core:**
-- [`Log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)
-- [`PascalToSentence.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs)
-
-**Test Suite:**
-- `TestCases.cs` (80-ish xUnit unit tests)
-- `TestSupport.cs` (log content check)
-- `AssemblyInfo.cs` (enforce sequential xUnit test execution)
-
-**Test Project Config:**
-- `TestZeroFrictionLogger.sln`
-- `Test.csproj` (.NET Core project file)
-
-**Note:** The test project uses [xUnit](https://xunit.net/?tabs=cs) for testing. Make sure you have it installed to build and run the tests. The test project uses .NET 8.0 and the latest xUnit packages. While the logger core supports .NET 6.0 (and earlier), the *test project* will **not** build on .NET 6.0.
-
-Currently, the xUnit test project - using the latest components - builds and runs on **.NET Core 8.0**.
-
-:white_check_mark: **Unit tests pass on both Windows and Linux (Ubuntu LTS)**
-All unit tests were confirmed passing before sharing the test project on GitHub.
-
-### Platform Compatibility Matrix
-
-| ZeroFrictionLogger                               | Windows        | Linux (LTS)    | Mac OS           |
-|--------------------------------------------------|----------------|----------------|------------------|
-| Builds on .NET Core 8.0                          | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
-| Runs on .NET Core 8.0 (demo app)                 | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
-| xUnit unit tests passing with .NET Core 8.0      | :white_check_mark: OK          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed |
-| Builds on .NET Core 6.0                          | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed   | :hourglass_flowing_sand: Not confirmed |
-| Runs on .NET Core 6.0 (demo app)                 | :white_check_mark: OK          | :hourglass_flowing_sand: Not confirmed   | :hourglass_flowing_sand: Not confirmed |
-| xUnit unit tests passing with .NET Core 6.0      | :x: Not building | :x: Not building | :hourglass_flowing_sand: Not confirmed   |
-| Builds on .NET Core 2.1 *(Out of Service)*       | :white_check_mark: builds :warning: end-of-life   | :warning: end-of-life   | :warning: end-of-life     |
-| Runs on .NET Core 2.1 *(Out of Service)* (demo)  | :white_check_mark: runs :warning: end-of-life     | :warning: end-of-life   | :warning: end-of-life     |
-
-:warning: .NET Core 2.1 is out of support.
-
-### Build from Source
-1. Download [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs)` and `[PascalToSentence.cs](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/PascalToSentence.cs) from GitHub.
-2. In Solution Explorer:
-- Right-click on your Project
-- Select **Add -> Existing item...**
-3. Select the two downloaded `.cs` files and click **Add**
-
 ## UTF-8
 UTF-8 Encoding without BOM should take care of compatibility with many other tools downstream.
 
@@ -298,10 +303,19 @@ There are **many** great and feature rich loggers out there, some including adva
 ## Unit tests
 Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictionLogger/tree/main/test/ZeroFrictionLogger.Tests) for verification and living documentation through practical examples.
 
-![Unit Tests Passing on Windows (1 of 2)](docs/images/v110_pass_on_windows_1of2.png)
-![Unit Tests Passing on Windows (2 of 2)](docs/images/v110_pass_on_windows_2of2.png)
-![Unit Tests Passing on Linux](docs/images/v110_pass_on_linux.png)
-![Unit Tests Passing on Linux](docs/images/unit_test_coverage.png)
+### Overview Linux
+![Unit tests passing on Linux](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/v111_pass_on_linux.png)
+
+### Overview Windows
+![Unit tests passing on Windows](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/v111_pass_on_windows.png)
+
+### Unit tests as living low level documentation
+![Unit tests passing on Linux](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/v111_unittests_1.png)
+
+![Unit tests passing on Linux](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/v111_unittests_2.png)
+
+### Coverage
+![Unit test coverage](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/unit_test_coverage.png)
 
 ## Full documentation  
 Public method documentation of [`log.cs`](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/test/ZeroFrictionLogger.Tests/Log.cs).
@@ -611,6 +625,3 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
-
-
-
