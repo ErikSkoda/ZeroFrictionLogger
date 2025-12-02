@@ -5,8 +5,6 @@ Features thread-safe logging, fallback to console and speedblink testing. **logg
 
 187 lines of executable code, 500+ due to whitespace and comments (MIT-license and for intellisense XML) covered by 115 dual purpose unit tests, providing proof of work and low-level living documentation.
 
-**Gentle reminder:** Drop in marker file `retain-non-ISO-8601-utc-timestamp.txt` in the host app runtime folder to keep using the more human readable v1.0.0 utc-timestamps (e.g. `2025-10-14 17:29:32`). From version 1.1.0 onwards ZFL uses the ISO-8601 utc timestamps (e.g. `2025-10-14T17:29:32Z`) for easier automated log processing by default. All other updates (like using milliseconds and TRACE-level logging) are opt-in. See [CHANGELOG.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CHANGELOG.md) for version 1.1.1 details.
-
 See screenshots of passing **unit tests**, coverage and latest documentation updates on [GitHub README](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/README.md).
 
 ## Quick Start
@@ -625,5 +623,6 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
 
 
