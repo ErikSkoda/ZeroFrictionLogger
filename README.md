@@ -232,7 +232,7 @@ When watching a fire in a fireplace, camp fire or bonfire our eyes are drawn to 
 ```
 
 ## Timezone - UTC by default, local possible
-Uses Utc time with format yyyy-MM-dd HH:mm:ss by default.
+Uses Utc time with format yyyy-MM-ddTHH:mm:ssZ by default.
 
 **Opt out of Utc time** in favor of local time by adding marker file `no-utc.txt` in host app bin folder.
 
@@ -623,6 +623,7 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
 
 
 
