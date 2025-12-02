@@ -21,11 +21,9 @@
 // SOFTWARE.
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO; //required to make Path.DirectorySeparatorChar #compliant with #legacy .Net
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -50,43 +48,43 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Marker to be checked in unit tests to prove
         /// unit tests are indeed using the expected version of the DLL.
         /// </summary>
-        /// <returns></returns>
-        public static string LoggerVersion() => "1.1.0";
+        /// <Returns>build nr of logger to be published</Returns>
+        public static string LoggerVersion() => "1.1.1";
 
         /// <summary>
         /// Visual markers, grepable sentinel tags to catch an
         /// uninitialized state and to prevent silent errors.
         /// </summary>
-        /// <returns>#zilch #iota #diddly squat</returns>
+        /// <Returns>#zilch #iota #diddly squat</Returns>
         public static string Zilch() => "#zilch #iota #diddly squat";
 
         /// <summary>
         /// Checks whether a value equals Zilch()
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <returns>boolean</returns>
+        /// <Returns>boolean</Returns>
         public static bool IsZilch(string value) => value == Zilch();
 
         /// <summary>
         /// Checks whether a value is different from Zilch()
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <returns>boolean</returns>
+        /// <Returns>boolean</Returns>
         public static bool NotZilch(string value) => value != Zilch();
 
         /// <summary>
         /// Visual markers, grepable sentinel tag to catch an
         /// uninitialized state and to prevent silent errors.
         /// </summary>
-        /// <returns>#null-value</returns>
+        /// <Returns>boolean</Returns>
         public static string NullExpression() => "#null-value";
 
         /// <summary>
-        /// Returns the passed value unless it's null, in which case it returns
+        /// Returns the passed value unless it's null, in which case it Returns
         /// sentinel tag "#null-value".
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <returns>value or #null-value</returns>
+        /// <Returns>value or #null-value</Returns>
         public static string ReplaceNull(string value) => value ?? NullExpression();
 
         /// <summary>
@@ -94,14 +92,14 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// in which case it returns #zilch #iota #diddly-squat.
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <returns>value or #zilch #iota #diddly-squat</returns>
+        /// <Returns>value or #zilch #iota #diddly-squat</Returns>
         public static string ReplaceNullOrEmpty(string value)
             => string.IsNullOrEmpty(value) ? Zilch() : value;
 
         /// <summary>
         /// Visual marker, grepable sentinel value for replacing data to be redacted.
         /// </summary>
-        /// <returns>value or #redacted #audit</returns>
+        /// <Returns>value or #redacted #audit</Returns>
         public static string RedactedExpression() => "#redacted " + GetAuditTag();
 
         /// <summary>
@@ -110,7 +108,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Returns false when value is null.
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <returns>boolean</returns>
+        /// <Returns>boolean</Returns>
         public static bool IsRedacted(string value) => value == RedactedExpression();
 
         /// <summary>
@@ -132,33 +130,35 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// </summary>
         /// <param name="context">UNREDACTED context info for prefixing redaction markers</param>
         /// <param name="value">Value replaced with a redaction marker</param>
-        /// <returns>[context (UNREDACTED!)] + #redacted #audit</returns>
+        /// <Returns>[context (UNREDACTED!)] + #redacted #audit</Returns>
         public static string ExplicitlyRedactAndMarkValue(string context, string value)
         {
+            string result;
             if (String.IsNullOrEmpty(context))
             {
-                return "[host app passed no context] " + RedactedExpression();
+                result = "[host app passed no context] " + RedactedExpression();
             }
             else
             {
                 if (String.IsNullOrEmpty(value))
                 {
-                    return "[" + context + "] " + RedactedExpression() +
-                        " host app passed null or empty value. " + Zilch();
+                    result = "[" + context + "] " + RedactedExpression() +
+                             " host app passed null or empty value. " + Zilch();
                 }
                 else
                 {
                     int len = value.Length;
                     string asterisk = new string('*', len); // works with.NET core 2.1
-                    return "[" + context + "] " + RedactedExpression() + " " + asterisk;
+                    result = "[" + context + "] " + RedactedExpression() + " " + asterisk;
                 }
             }
+            return result;
         }
 
         /// <summary>
         /// Returns log file extension for use by host application for handling log file retention.
         /// </summary>
-        /// <returns>.log</returns>
+        /// <Returns>.log</Returns>
         public static string GetLogFileExtension() => ".log";
 
         /// <summary>
@@ -166,14 +166,14 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// is: `null`, `empty string` or contains `dotnet`, `xunit`, `testhost`,
         /// `zerofrictionlogger`, `zilch` or `.`, then the logger defaults to `"app"`.
         /// </summary>
-        /// <returns>host app name</returns>
+        /// <Returns>host app name</Returns>
 		[MethodImpl(MethodImplOptions.NoInlining)]
         public static string GetAppName() => _appName;
 
         /// <summary>
         /// Returns host app path using System.AppContext.
         /// </summary>
-        /// <returns>host app path</returns>
+        /// <Returns>host app path</Returns>
         public static string GetAppPath()
             => AppContext.BaseDirectory.TrimEnd(
                 Path.DirectorySeparatorChar,
@@ -182,7 +182,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// <summary>
         /// Returns app path and app name based logfile name.
         /// </summary>
-        /// <returns>logfile path and filename</returns>
+        /// <Returns>logfile path and filename</Returns>
         public static string GetLogPathAndFilename()
             => Path.Combine(GetAppPath(), GetAppName() + GetLogFileExtension()); //#legacy proof
 
@@ -192,7 +192,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// Replaces a call to the Humanizer package to remain at zero dependencies.
         /// </summary>
         /// <param name="value">expression passed</param>
-        /// <returns>sentence</returns>
+        /// <Returns>sentence</Returns>
         public static string ConvertPascalCaseToSentence(string value)
         {
             return PascalToSentence.ConvertPascalCaseToSentence(value); // zero #dependencies
@@ -334,7 +334,6 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         public static void InitialiseErrorHandling(string appName)
         {
             ProcessAppName(appName);
-            Console.WriteLine("Start: " + GetAppName());
             CheckOptions();
 
             if (CanWriteToLogFile())
@@ -367,13 +366,14 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
 
                 LogAudit("speedblink icon enabled = " + _speedBlinkEnabled.ToString() +
                     " due to presence/absence of no-speedblink.txt in app path at initialisation");
+
                 LogTrace("double check loglevel TRACE is active");
                 LogDebug("double check loglevel DEBUG is active");
                 LogInfo("double check loglevel INFO is active");
                 LogWarning("double check loglevel WARN is active");
                 LogAudit("Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] " +
                     "can not be disabled.");
-                LogAudit("Log initialisation complete.");
+                LogAudit("ZFL version " + LoggerVersion());
             }
         }
 
@@ -385,7 +385,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         /// `xunit`, `zerofrictionlogger`, `zilch` or `.`
         /// </summary>
         /// <param name="appName">host app name passed to `InitialiseErrorHandling`</param>
-        /// <returns>boolean</returns>
+        /// <Returns>boolean</Returns>
         public static bool IsAppNameOK(string appName)
         {
             if (String.IsNullOrEmpty(appName)) return false;
@@ -407,10 +407,10 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
             _debugEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-debug.txt"));
             _infoEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-info.txt"));
             _warnEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-warn.txt"));
+            _speedBlinkEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-speedblink.txt"));
             _milliSecEnabled = File.Exists(Path.Combine(GetAppPath(), "use-millisec.txt"));
             _retainNonIso8601UtcTimeStamp = File.Exists(Path.Combine(GetAppPath(),
                                                         "retain-non-ISO-8601-utc-timestamp.txt"));
-            _speedBlinkEnabled = !File.Exists(Path.Combine(GetAppPath(), "no-speedblink.txt"));
         }
 
         private static string GetExceptionTag() => "#exception";
@@ -458,32 +458,33 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
 
         private static string GetTimeStamp()
         {
+            string result;
             if (_utcEnabled)
             {
                 if (_retainNonIso8601UtcTimeStamp)
                 {
                     if (_milliSecEnabled)
                     {
-                        return DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff",
-                                                        CultureInfo.InvariantCulture);
+                        result = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff",
+                                                          CultureInfo.InvariantCulture);
                     }
                     else
                     {
-                        return DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss",
-                                                        CultureInfo.InvariantCulture);
+                        result = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss",
+                                                          CultureInfo.InvariantCulture);
                     }
                 }
                 else
                 {
                     if (_milliSecEnabled)
                     {
-                        return DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'",
-                                                        CultureInfo.InvariantCulture);
+                        result = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'",
+                                                          CultureInfo.InvariantCulture);
                     }
                     else
                     {
-                        return DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'",
-                                                        CultureInfo.InvariantCulture);
+                        result = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                                          CultureInfo.InvariantCulture);
                     }
                 }
             }
@@ -491,15 +492,16 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
             {
                 if (_milliSecEnabled)
                 {
-                    return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff",
-                                                 CultureInfo.InvariantCulture);
+                    result = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff",
+                                                   CultureInfo.InvariantCulture);
                 }
                 else
                 {
-                    return DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss",
-                                                 CultureInfo.InvariantCulture);
+                    result = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss",
+                                                   CultureInfo.InvariantCulture);
                 }
             }
+            return result;
         }
 
         private static void WriteLineToLog(string logLine)
@@ -553,7 +555,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
             else
             {
                 return $"{errMsg}{Environment.NewLine} " +
-                    $"stack trace: {Environment.NewLine}{stackTrace}";
+                       $"stack trace: {Environment.NewLine}{stackTrace}";
             }
         }
 
