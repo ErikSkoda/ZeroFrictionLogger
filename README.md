@@ -65,7 +65,7 @@ You may want to customize logger behaviour. Here is how:
 
 *`InitialiseErrorHandling()` checks marker file presence in the host app runtime folder.* The log starts with a status update on customized behaviour and briefly informs you on how to opt-out.
 
-### Creating a report from grepable markers - Out of scope but not out of heart
+### Creating reports from grepable markers - Out of scope but not out of heart
 While **out of scope** for the logger, extracting an audit (or any) report from logfile based on a grepable marker (here `#audit`) can be a real time saver - allowing you to create reports before they are built.
 
 The one-liner below works from Windows CMD. Tested, works.
@@ -623,6 +623,7 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
 
 
 
