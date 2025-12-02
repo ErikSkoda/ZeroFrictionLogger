@@ -178,7 +178,7 @@ The logger records **only** application events - **not** system logs, third part
 
 Still, this does not mean you have to be blind to environmental issues. Years ago, I asked the infra team next door—already running an enterprise-grade monitoring suite—for disk and memory checks on a tool server. They said it required budget approval, which never came. Later on I built my own checks, logged the results, and included them in the reports.
 
-## Grepable markers
+## Grepable markers, MVP reports
 The exception methods (and logAudit) add visual markers, grepable sentinel tags (#exception, #audit) to the log. This allows to extract and share for instance audit reports without/before building them in the host app. Used the approach in a test tool with #summary, #details, #metrics, #S2R (steps to reproduce) enabling provision of reports before having built them. This allowed for initial focus on 1. tool stability and 2. testware validation - a huge time saver. The approach allowed building fancy HTML reports with pie charts and styling later, with the reduced pressure of "nice to have" rather than high-pressure "must have" features, allowing for some much-needed breathing space.
 
 *Come to think of it, you don't even need ZeroFrictionLogger to pull this off.* You can probably do it already with the logger you're using right now. See **Quick Start** for an example.
@@ -625,3 +625,4 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
