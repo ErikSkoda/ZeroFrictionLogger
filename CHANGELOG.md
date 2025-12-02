@@ -9,7 +9,7 @@ Deploying update to GitHub (Tuesday) and NuGet (Wednesday)
 
 :arrows_counterclockwise: **Updates**
 
-- Removing the console announcement start <appname> on initialization
+- Removing the console announcement start \<appname\> on initialization
 - Adding version number to logfile instead
 - Updating README link to CHANGELOG from relative to absolute, so it works in NuGet as well
 - Moving the Quick Start section to top of README for easy access
@@ -160,3 +160,4 @@ This approach combines **maximum developer control** with **sensible defaults**,
 
 ## [0.1.0] - 2025-07-11
 - upload of initial README.md
+
