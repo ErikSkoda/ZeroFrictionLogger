@@ -80,7 +80,7 @@ namespace ZeroFrictionLogger // {} is #compliant with #legacy Net Core 2.1 and .
         public static string NullExpression() => "#null-value";
 
         /// <summary>
-        /// Returns the passed value unless it's null, in which case it Returns
+        /// Returns the passed value unless it's null, in which case it returns
         /// sentinel tag "#null-value".
         /// </summary>
         /// <param name="value">expression passed</param>
