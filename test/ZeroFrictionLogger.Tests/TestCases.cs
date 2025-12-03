@@ -1506,7 +1506,7 @@ public static class TestCases // builds in both 2.1 (Out of Service) and 8.0 LTS
     }
 
     [Fact]
-    public static void LoggerVersion_Returns_1dot0dot0()
+    public static void LoggerVersion_Returns_1dot1dot1()
     {
         // arrange
         string expected = "1.1.1";
