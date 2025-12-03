@@ -104,6 +104,7 @@ copy app.log %timestamp%-app.log
 ```bash
 cp app.log "$(date +%Y-%m-%d_%H_%M_%S%2N)-app.log"
 ```
+Confirmed to work before 10:00. Copied a log file to `2025-12-03_09_51_4502-app.log` **OK**
 
 ### NuGet package
 Nuget package targetting `.netstandard2.1` is available on NuGet.
@@ -313,6 +314,7 @@ Check out the [xunit unit test project](https://github.com/ErikSkoda/ZeroFrictio
 ![Unit tests passing on Linux](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/v111_unittests_2.png)
 
 ### Coverage
+(public-facing methods)
 ![Unit test coverage](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/docs/images/unit_test_coverage.png)
 
 ## Full documentation  
@@ -623,6 +625,7 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
+
 
 
 
