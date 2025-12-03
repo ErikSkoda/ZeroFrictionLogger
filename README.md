@@ -266,37 +266,38 @@ There are **many** great and feature rich loggers out there, some including adva
 
 ## Example log output
 ```text
-2025-10-14T17:29:32Z [AUDIT] start log. #audit
-2025-10-14T17:29:32Z [AUDIT] Start log initialisation for app: ConsoleAppTestingLoggingNetCore2dot1OutOfSupport #audit
-2025-10-14T17:29:32Z [AUDIT] trace enabled = False due to presence/absence of use-trace.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] info enabled = True due to presence/absence of no-info.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] warn enabled = True due to presence/absence of no-warn.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] utc enabled = True due to presence/absence of no-utc.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] milliseconds enabled = True due to presence/absence of use-millisec.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = False due to presence/absence of retain-non-ISO-8601-utc-timestamp.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [AUDIT] speedblink icon enabled = True due to presence/absence of no-speedblink.txt in app path at initialisation #audit
-2025-10-14T17:29:32Z [DEBUG] double check loglevel DEBUG is active
-2025-10-14T17:29:32Z [INFO] double check loglevel INFO is active
-2025-10-14T17:29:32Z [WARN] double check loglevel WARN is active
-2025-10-14T17:29:32Z [AUDIT] Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] can not be disabled. #audit
-2025-10-14T17:29:32Z [AUDIT] Log initialisation complete. #audit
+2025-12-03T11:40:05Z [AUDIT] start log. #audit
+2025-12-03T11:40:05Z [AUDIT] Start log initialisation for app: ConsoleAppTestingLoggingNetCore2dot1OutOfSupport #audit
+2025-12-03T11:40:05Z [AUDIT] trace enabled = False due to presence/absence of use-trace.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] debug enabled = True due to presence/absence of no-debug.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] info enabled = True due to presence/absence of no-info.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] warn enabled = True due to presence/absence of no-warn.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] utc enabled = True due to presence/absence of no-utc.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] milliseconds enabled = False due to presence/absence of use-millisec.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] retain version 1.0.0 more human readable non ISO-8601 UTC timestamp = False due to presence/absence of retain-non-ISO-8601-utc-timestamp.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [AUDIT] speedblink icon enabled = True due to presence/absence of no-speedblink.txt in app path at initialisation #audit
+2025-12-03T11:40:05Z [DEBUG] double check loglevel DEBUG is active
+2025-12-03T11:40:05Z [INFO] double check loglevel INFO is active
+2025-12-03T11:40:05Z [WARN] double check loglevel WARN is active
+2025-12-03T11:40:05Z [AUDIT] Gentle reminder: levels [ERROR], [FATAL] and [AUDIT] can not be disabled. #audit
+2025-12-03T11:40:05Z [AUDIT] ZFL version 1.1.1 #audit
 ...
-2025-10-14T17:29:32Z [INFO] Rain in Ireland has been referred to me as liquid sunshine.
-2025-10-14T17:29:32Z [WARN] Animal print pants outta control.
-2025-10-14T17:29:32Z [ERROR] Pizza with pineapple detected.
-2025-10-14T17:29:32Z [FATAL] It was at that moment Nathan knew, he'd bleep-ed up.
+2025-12-03T11:40:06Z [DEBUG] Penicillin discovered by accident.
+2025-12-03T11:40:06Z [INFO] Rain in Ireland identified as liquid sunshine.
+2025-12-03T11:40:06Z [WARN] Animal print pants outta control.
+2025-12-03T11:40:06Z [ERROR] Pizza with pineapple detected.
+2025-12-03T11:40:06Z [FATAL] It was at that moment Nathan knew...
 ...
-2025-10-14T17:29:32Z #speedblink
+2025-12-03T11:40:06Z #speedblink
       ___   __  __   ___    #speedblink
      |  _|  \ \/ /  |_  |   #speedblink
      | |     \  /     | |   #speedblink
      | |_    /  \    _| |   #speedblink
      |___|  /_/\_\  |___|   #speedblink
                             #speedblink
-2025-10-14T17:29:32Z [ERROR] Cause exception for demo purpose
-2025-10-14T17:29:32Z [ERROR] Attempted to divide by zero. #exception
-2025-10-14T17:29:32Z [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
+2025-12-03T11:40:06Z [ERROR] Cause exception for demo purpose
+2025-12-03T11:40:06Z [ERROR] Attempted to divide by zero. #exception
+2025-12-03T11:40:06Z [ERROR] tech info: Attempted to divide by zero. stack trace: #redacted #audit
 ```
 
 ## Unit tests
@@ -626,11 +627,5 @@ to the hard coded expression `"app"`.
 ## Project Policies
 - Please see [CONTRIBUTING.md](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CONTRIBUTING.md) for contribution guidelines.
 - Review our [Code of Conduct](https://github.com/ErikSkoda/ZeroFrictionLogger/blob/main/CODE_OF_CONDUCT.md) to understand community standards.
-
-
-
-
-
-
 
 
